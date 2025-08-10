@@ -29,9 +29,12 @@
             font-size: 2rem;
             margin-top: 16px;
         }
+        p, pre{
+            margin-top: 20px;
+        }
     </style>
 </head>
-<body>
+<body class="grid place-content-center">
     <main class="max-w-5xl p-5 md:p-10">
         {% block body %}
             {{ body | safe }}
