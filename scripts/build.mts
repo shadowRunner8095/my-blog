@@ -12,7 +12,7 @@ async function compileJS(){
     entryPoints: [join(baseDir, 'shared.ts')],
     minify: true,
     outdir: join(baseDir, 'dist'),
-    format: 'esm'
+    format: 'esm',
   })
 }
 
