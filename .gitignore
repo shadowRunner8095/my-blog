@@ -5,3 +5,7 @@ node_modules
 squide.dev.conf
 .env
 .devcontainer/.npmrc
+
+# Added by cargo
+
+/target

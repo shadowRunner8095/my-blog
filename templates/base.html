@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/my-blog/main.css">
+    <style>
+        h1{
+            color: var(--color-title-primary);
+            font-size: 4rem;
+            font-weight: bolder;
+        }
+        h2{
+            color: var(--color-subtitle-primary);
+            font-size: 2rem;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <main class="max-w-5xl p-5 md:p-10">
+        {% block body %}
+            {{ body | safe }}
+        {% endblock %}
+    </main>
+</body>
+</html>

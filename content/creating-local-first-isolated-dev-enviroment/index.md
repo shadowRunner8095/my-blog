@@ -1,3 +1,4 @@
+
 # Creating a local first isolated dev enviroment
 
 
@@ -8,7 +9,7 @@ emulate a malicius pacakge
 
 Information stoler
 
-```
+```typescript
 const envs = get_all_ur_envs()
 const config_files_maybe_with_tokens = get_files(DEFAULT_FILES)
 

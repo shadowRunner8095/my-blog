@@ -1,0 +1,13 @@
+[package]
+name = "workspace"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+glob = "0.3.2"
+minijinja = { version = "2.11.0", features = ["loader"] }
+pulldown-cmark = "0.13.0"
+rayon = "1.10.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9.34"
+syntect = "5.2.0"

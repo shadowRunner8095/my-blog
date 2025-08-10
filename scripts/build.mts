@@ -11,9 +11,9 @@ async function compileCss() {
   })
   const scanner = new Scanner({
     sources: [{
-      base: baseDir,
+      base: join(baseDir, 'dist'),
       negated: false,
-      pattern: 'index.html'
+      pattern: '**/*.html'
     }]
   })
 
@@ -25,16 +25,17 @@ async function compileCss() {
   })
 
   const { code: cssCompiled } = optimize(build(scanner.scan()), {
-    minify: true
+    // minify: true
   })
 
   return writeFile(join(baseDir, 'dist', 'main.css'), cssCompiled)
 }
 
-await Promise.all([
-  compileCss(),
+await Promise.all([,
   cp(join(baseDir, 'index.html'), join(baseDir, 'dist', 'index.html')),
   cp(join(baseDir, 'assets'), join(baseDir, 'dist', 'assets'), {
     recursive: true
   })
 ])
+
+await compileCss()
