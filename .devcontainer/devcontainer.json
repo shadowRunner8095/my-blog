@@ -1,0 +1,22 @@
+{
+  "name": "Node rust pnpm Dev Container",
+  "dockerComposeFile": ["./docker-compose.yml"],
+  "service": "dev",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/usr/bin/zsh"
+      },
+      "extensions": [
+        "eamodio.gitlens",
+        "dbaeumer.vscode-eslint",
+        "rust-lang.rust-analyzer",
+        "bradlc.vscode-tailwindcss",
+        "vscode-icons-team.vscode-icons",
+        "sonarsource.sonarlint-vscode",
+        "ms-vscode.vscode-typescript-next"
+      ]
+    }
+  },
+  "workspaceFolder": "/home/ubuntu/workspace"
+}

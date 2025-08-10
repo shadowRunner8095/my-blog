@@ -1,0 +1,7 @@
+dist
+node_modules
+.pnpm-store
+
+squide.dev.conf
+.env
+.devcontainer/.npmrc

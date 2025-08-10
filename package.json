@@ -1,0 +1,25 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:serve": "tsx ./scripts/build.mts && serve dist -p 3001",
+    "build": "tsx ./scripts/build.mts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.14.0",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "@tailwindcss/node": "^4.1.11",
+    "@tailwindcss/oxide": "^4.1.11",
+    "@types/node": "^24.2.1",
+    "serve": "^14.2.4",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}
