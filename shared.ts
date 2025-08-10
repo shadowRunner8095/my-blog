@@ -36,7 +36,7 @@ const { body } = document
 
 const parser = new DOMParser();
 
-body.addEventListener('mouseover', async (event)=>{
+document.addEventListener('mouseover', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
     
@@ -54,7 +54,7 @@ body.addEventListener('mouseover', async (event)=>{
     Object.assign(target, methods)
 })
 
-body.addEventListener('click', async (event)=>{
+document.addEventListener('click', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
   console.log(isAnchor, target)
