@@ -9,6 +9,7 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - All content and code are open source.
 
 ## Roadmap
+- [ ] Add google tracking
 - [ ] Create a framework to autogenerate the website files
 
 ## License
