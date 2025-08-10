@@ -17,6 +17,7 @@
     "@tailwindcss/node": "^4.1.11",
     "@tailwindcss/oxide": "^4.1.11",
     "@types/node": "^24.2.1",
+    "esbuild": "^0.25.8",
     "serve": "^14.2.4",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.20.3",
