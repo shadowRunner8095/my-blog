@@ -81,5 +81,7 @@ body.addEventListener('click', async (event)=>{
 
     currentCleanUp = appendExtraStyles();
     replaceBody();
+    // Update the URL and history
+    history.pushState(null, '', target.href);
 })
 
