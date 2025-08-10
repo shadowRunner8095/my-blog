@@ -22,6 +22,8 @@ jobs:
 
       - name: Downloads blog builder
         run: curl -L -o workspace https://github.com/${{ github.repository }}/releases/download/rust-ubuntu-build/workspace
+      - name: Make blog builder executable
+        run: chmod +x workspace
      
       - name: Install pnpm
         uses: pnpm/action-setup@v4
