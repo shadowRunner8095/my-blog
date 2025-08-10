@@ -52,7 +52,9 @@
 </div>
 <style>
   input.toggler:not(:checked) ~ .toggled-container {
-  animation: fadeOut 0.4s forwards;
+  opacity: 0;
+    transform: translateX(-110%);
+    animation: fadeHeigth 0.7s forwards;
 }
 
 input.toggler:not(:checked) ~ .toggler-button .open {
@@ -63,9 +65,6 @@ input.toggler:not(:checked) ~ .toggler-button .close {
   display: none;
 }
 
-input.toggler:checked ~ .toggled-container {
-  animation: fadeIn 0.4s forwards;
-}
 
 input.toggler:checked ~ .toggler-button .open {
   display: none;
@@ -75,37 +74,18 @@ input.toggler:checked ~ .toggler-button .close {
   display: block;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    max-height: 0;
-    width: 0;
-    transform: translateX(-100px);
+@keyframes fadeSize {
+  90%{
+    height: auto;
+    width: auto;
   }
-  50% {
-    opacity: 1;
-    transform: translateX(0);
-    width: 100vw;
+  to{
+    height: 0;
+    width: 0;
   }
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    max-height: unset;
-    transform: translateX(0);
-  }
-  50% {
-    opacity: 0;
-    transform: translateX(-100px);
-  }
-  to {
-    opacity: 0;
-    max-height: 0;
-    height: 0;
-    transform: translateX(-100px);
-  }
-}
+
 
 input.toggler + * {
   transition: all ease-in-out;
