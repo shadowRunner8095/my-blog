@@ -237,7 +237,7 @@ fn main() {
     }
     //TODO: this base and dist this info should come from a options file
 
-    let base = Path::new("pages");
+    let base = Path::new("content");
     let dist = Path::new("dist");
 
     let file = File::open("syntaxes.packdump").expect("syntaxes.packdump not found — run with `--dump` first");
