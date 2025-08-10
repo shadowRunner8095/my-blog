@@ -32,19 +32,19 @@
 
   <navbar class="toggled-container block text-white">
     <div class="h-full max-w-[95%] grid grid-cols-2 grid-rows-2">
-      <div class="flex flex-col gap-2 p-3 z-10 w-[105%] bg-violet-950 shadow-[4px_6px_0_0_var(--color-subtitle-primary)]">
+      <div class="flex flex-col md:flex-row gap-3 p-3 z-10 w-[105%] bg-violet-950 shadow-[4px_6px_0_0_var(--color-subtitle-primary)]">
         {% for link in leftContainer %}
-          <a href="{{ link.url }}">{{ link.textContent }}</a>
+          <a href="{{ link.url }}">[ {{ link.textContent }} ]</a>
         {% endfor %}
       </div>
       <div class="
-        flex flex-col gap-2
+        flex flex-col md:flex-row gap-3
         p-3 col-end-3 row-end-3 w-[110%] 
         -translate-y-2 bg-violet-950 
         shadow-[4px_6px_0_0_var(--color-subtitle-primary)]
       ">
         {% for link in rightContainer %}
-          <a href="{{ link.url }}" {% if 'medium.com' in link.url %}target="_blank" rel="noopener"{% endif %}>{{ link.textContent }}</a>
+          <a href="{{ link.url }}" {% if 'medium.com' in link.url %}target="_blank" rel="noopener"{% endif %}>[ {{ link.textContent }} ]</a>
         {% endfor %}
       </div>
     </div>
