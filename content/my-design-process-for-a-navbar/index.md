@@ -15,10 +15,10 @@ Well, even if this website is mainly informative and the repo is just a place to
 Yeah, I want to see something that *yells* — this is me.
 
 Another thing I believe is that patterns are meant to be broken *organically*. Meaning: if you  
-- - Understand why the pattern exists in the first place  
-- - Know in what situations it’s most useful  
-- - Get the design principles behind the pattern  
-- - Are aware of the trade-offs it involves  
+- \- Understand why the pattern exists in the first place  
+- \- Know in what situations it’s most useful  
+- \- Get the design principles behind the pattern  
+- \- Are aware of the trade-offs it involves  
 
 Then you can keep the best parts of that pattern and “break” others, merging it with parts or principles from different patterns.
 
@@ -70,19 +70,19 @@ That’s a discussion for another time. I still need to decide if I’m going to
 
 ## Progressive Enhancement
 
-The menu behavior should be implemented *without* JavaScript. You can learn more about that [here](#).
+The menu behavior should be implemented *without* JavaScript. You can learn more about that [here](https://www.freecodecamp.org/news/what-is-progressive-enhancement-and-why-it-matters-e80c7aaf834a/).
 
 ## The Implementation
 
 To simplify the first iteration, we can break the navbar into two problems:  
-- - The menu open/close button  
-- - The navbar itself  
+- \- The menu open/close button  
+- \- The navbar itself  
 
 The first problem is already solved in another article by generalization, so we focus now on the second:
 
-- - The Z form  
-- - The diagonal direction  
-- - The fade-in, fade-out animation  
+- \- The Z form  
+- \- The diagonal direction  
+- \- The fade-in, fade-out animation  
 
 Animations can take some time, so the first two problems seem approachable. Let’s try the first one.
 
@@ -124,3 +124,8 @@ interface Data {
 }
 
 ```
+The final result is the navbar you can use rigth now, but it is too dependant of the tailwind
+css which because of a network error cannot be fetched so we have a long raod ahead solving those
+challenges.
+
+Want to see the code? It's [here](https://github.com/shadowRunner8095/my-blog/blob/391f59b00d2238fb194f25acb57ede3bd107ad12/templates/navbar.html)
