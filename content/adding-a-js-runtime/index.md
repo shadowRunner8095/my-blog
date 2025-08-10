@@ -76,28 +76,28 @@ const { body } = document
 const parser = new DOMParser();
 
 body.addEventListener('mouseover', async (event)=>{
-    const { currentTarget } = event
-    const isAnchor = currentTarget instanceof HTMLAnchorElement
+    const { target } = event
+    const isAnchor = target instanceof HTMLAnchorElement
     if(!isAnchor)
         return;
 
-     const { clientSideNavigation } = currentTarget.dataset
+     const { clientSideNavigation } = target.dataset
 
     if(clientSideNavigation !== 'hover')
         return;
 
-    const methods = await getClienPageAheadOfTime(currentTarget.href, parser)
+    const methods = await getClienPageAheadOfTime(target.href, parser)
     // This adds extra methods to the current target to reuse in the click event
-    Object.assign(currentTarget, methods)
+    Object.assign(target, methods)
 })
 
 body.addEventListener('click', async (event)=>{
-    const { currentTarget } = event
-    const isAnchor = currentTarget instanceof HTMLAnchorElement
+    const { target } = event
+    const isAnchor = target instanceof HTMLAnchorElement
     if(!isAnchor)
         return;
 
-    const { clientNavigation } = currentTarget.dataset
+    const { clientNavigation } = target.dataset
 
     if(clientNavigation !== 'click')
         return;
@@ -109,13 +109,13 @@ body.addEventListener('click', async (event)=>{
     const { 
         appendExtraStyles, 
         replaceBody 
-    } = (currentTarget as any).hasExtraMethods 
-        ? (currentTarget as unknown as Awaited<ReturnType<typeof getClienPageAheadOfTime>> )
-        : await getClienPageAheadOfTime(currentTarget.href, parser)
+    } = (target as any).hasExtraMethods 
+        ? (target as unknown as Awaited<ReturnType<typeof getClienPageAheadOfTime>> )
+        : await getClienPageAheadOfTime(target.href, parser)
 
            // Update browser URL and navigation history
-    if (typeof currentTarget.href === 'string') {
-        history.pushState(null, '', currentTarget.href);
+    if (typeof target.href === 'string') {
+        history.pushState(null, '', target.href);
     }
 
     if(typeof currentCleanUp === 'function')
