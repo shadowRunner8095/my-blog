@@ -1,37 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>With the Heart of a Computer Wizard</title>
-  <meta name="description"
-    content="A personal logbook and blog about my journey, dreams, and ideas in computing. Follow along as I learn, experiment, and share insights on technology and programming.">
-  <meta property="og:title" content="With the Heart of a Computer Wizard">
-  <meta property="og:description"
-    content="A personal logbook and blog about my journey, dreams, and ideas in computing. Follow along as I learn, experiment, and share insights on technology and programming.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="/my-blog/assets/wizard.lulita.webp">
-  <meta property="og:image:alt" content="A funny dog with clothes and typing on a computer">
-  <meta property="og:url" content="https://shadowrunner11.github.io/my-blog/">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="With the Heart of a Computer Wizard">
-  <meta name="twitter:description"
-    content="A personal logbook and blog about my journey, dreams, and ideas in computing. Follow along as I learn, experiment, and share insights on technology and programming.">
-  <meta name="twitter:image" content="/my-blog/assets/wizard.lulita.webp">
-  <meta name="twitter:image:alt" content="A funny dog with clothes and typing on a computer">
-  <link rel="stylesheet" href="./main.css">
-  <script type="module" src="/my-blog/shared.js"></script>
-</head>
-
-<body>
   <main class="grid gap-8 p-3 sm:p-10 place-content-center">
     <section class="flex gap-8 justify-center items-center md:p-20 max-w-5xl place-self-center">
       <div class="hidden md:block w-[200px] grow-1 shrink-0">
         <img src="./assets/wizard.lulita.webp" alt="a funny dog with clothes and typing in a computer" width="200"
           class="rounded-2xl" height="200" />
       </div>
-
       <hgroup class="flex flex-col gap-5 items-center md:items-stretch">
         <h1
           class="text-shadow-cyan-300 text-shadow-sm text-center font-extrabold md:text-left text-6xl text-title-primary ">
@@ -56,22 +28,18 @@
         Their inspiration has unearthed an old dream I had buried:
         I want to become a <a href="https://jvns.ca/blog/so-you-want-to-be-a-wizard/">Computer Wizard</a>.
       </p>
-
       <p>
         So, this little public corner of the web will be my logbook — a place to share my journey and my ideas.
         I love reinventing the wheel, exploring performance, and navigating tricky trade-offs just for the joy of
         discovery (even the <a href="https://github.com/Shadowrunner8095/my-blog">source code</a> of this blog does not
         use a bundler or any modern page builder, just for the sake of learning).
       </p>
-
       <p>
         I know I still have a lot to learn, and I hope this growing collection will stand as a record of my path.
         So… <em>per aspera ad astra</em>, friends.
         (And yes — the image is AI-generated; otherwise, that monitor wouldn’t be in such a strange position.)
       </p>
     </section>
-
-
     <section class="max-w-5xl grid gap-6">
       <h3 class="text-subtitle-primary font-bold text-3xl">Who am I?</h3>
       <p>
@@ -80,7 +48,6 @@
         and <a href="https://medium.com/@shadowrunner8095">Medium</a>. Let's see where this road takes us.
       </p>
     </section>
-
     <section class="max-w-5xl grid gap-6">
       <h3 class="text-subtitle-primary font-bold text-3xl">FAQ</h3>
       <div class="grid gap-3">
@@ -109,8 +76,4 @@
         </p>
       </div>
     </section>
-
   </main>
-</body>
-
-</html>

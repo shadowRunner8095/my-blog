@@ -43,7 +43,6 @@ async function compileCss() {
 }
 
 await Promise.all([,
-  cp(join(baseDir, 'index.html'), join(baseDir, 'dist', 'index.html')),
   cp(join(baseDir, 'assets'), join(baseDir, 'dist', 'assets'), {
     recursive: true
   }),
