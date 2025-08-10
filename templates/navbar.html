@@ -52,7 +52,7 @@
 </div>
 <style>
   input.toggler:not(:checked) ~ .toggled-container {
-  opacity: 0;
+    opacity: 0;
     transform: translateX(-110%);
     animation: fadeHeigth 0.7s forwards;
 }
@@ -87,7 +87,7 @@ input.toggler:checked ~ .toggler-button .close {
 
 
 
-input.toggler + * {
-  transition: all ease-in-out;
-}
+.toggled-container {
+    transition: all 0.4s ease-in-out;
+  }
 </style>
