@@ -43,9 +43,9 @@ body.addEventListener('mouseover', async (event)=>{
     if(!isAnchor)
         return;
 
-     const { clientSideNavigation } = target.dataset
+     const { clientNavigation } = target.dataset
 
-    if(clientSideNavigation !== 'hover')
+    if(clientNavigation !== 'hover')
         return;
 
     const methods = await getClienPageAheadOfTime(target.href, parser)
@@ -60,9 +60,9 @@ body.addEventListener('click', async (event)=>{
     if(!isAnchor)
         return;
 
-    const { clientSideNavigation } = target.dataset
+    const { clientNavigation } = target.dataset
 
-    if(clientSideNavigation !== 'click')
+    if((clientNavigation !== 'click') ||(clientNavigation !== 'hover'))
         return;
 
     event.preventDefault();
