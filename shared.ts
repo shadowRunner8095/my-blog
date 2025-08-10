@@ -39,6 +39,7 @@ const parser = new DOMParser();
 body.addEventListener('mouseover', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
+    console.log(isAnchor, target)
     if(!isAnchor)
         return;
 
@@ -55,7 +56,7 @@ body.addEventListener('mouseover', async (event)=>{
 body.addEventListener('click', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
-
+  console.log(isAnchor, target)
     if(!isAnchor)
         return;
 
