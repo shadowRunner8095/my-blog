@@ -9,10 +9,13 @@ What I do here is just for fun.
 
 See, I really love the 80s vibe and aesthetics of that time, but my page didn’t reflect it at all.
 
-I shared the website link with a dear friend, and she pointed out how the site looked aesthetically — and honestly, I agreed with her. I was like, “But this is an informative blog! The purpose isn’t aesthetics...”  
+I shared the website link with a dear friend, and she pointed out how the site looked no that aesthetically appealing — and honestly, I agreed with her. At first I was like, “But this is an informative blog! The purpose isn’t aesthetics...”  but in my heart I know I could do a better job
 
-Well, even if this website is mainly informative and the repo is just a place to create and share open source projects, I hate being boring to myself.  
+Because well, even if this website is mainly informative and the repo is just a place to create and share open source projects, I hate being boring to myself.  
 Yeah, I want to see something that *yells* — this is me.
+
+Also we are going to perfomr this task with no javascript to make performant our
+navbar.
 
 Another thing I believe is that patterns are meant to be broken *organically*. Meaning: if you  
 - \- Understand why the pattern exists in the first place  
