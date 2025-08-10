@@ -113,6 +113,11 @@ body.addEventListener('click', async (event)=>{
         ? (currentTarget as unknown as Awaited<ReturnType<typeof getClienPageAheadOfTime>> )
         : await getClienPageAheadOfTime(currentTarget.href, parser)
 
+           // Update browser URL and navigation history
+    if (typeof currentTarget.href === 'string') {
+        history.pushState(null, '', currentTarget.href);
+    }
+
     if(typeof currentCleanUp === 'function')
         currentCleanUp();
 

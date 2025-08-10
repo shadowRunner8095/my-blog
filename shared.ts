@@ -48,23 +48,24 @@ body.addEventListener('click', async (event)=>{
         return;
 
     event.preventDefault();
-    
 
-    
-    const { 
-        appendExtraStyles, 
-        replaceBody 
-    } = (currentTarget as any).hasExtraMethods 
-        ? (currentTarget as unknown as Awaited<ReturnType<typeof getClienPageAheadOfTime>> )
+    const {
+        appendExtraStyles,
+        replaceBody
+    } = (currentTarget as any).hasExtraMethods
+        ? (currentTarget as unknown as Awaited<ReturnType<typeof getClienPageAheadOfTime>>)
         : await getClienPageAheadOfTime(currentTarget.href, parser)
 
-    if(typeof currentCleanUp === 'function')
+    // Update browser URL and navigation history
+    if (typeof currentTarget.href === 'string') {
+        history.pushState(null, '', currentTarget.href);
+    }
+
+    if (typeof currentCleanUp === 'function')
         currentCleanUp();
 
-    currentCleanUp = appendExtraStyles()
-    replaceBody()
-
- 
+    currentCleanUp = appendExtraStyles();
+    replaceBody();
 })
 
 body.addEventListener('mouseover', async (event)=>{
