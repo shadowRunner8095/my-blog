@@ -25,7 +25,7 @@ fn load_meta(meta_path: &Path) -> Meta {
     }
 }
 
-/// Title fallback: folder name with '-' replaced by ' ' and capitalized words
+
 fn folder_name_to_title(folder: &Path) -> String {
     folder
         .file_name()
@@ -235,8 +235,9 @@ fn main() {
         dump_syntaxes();
         return;
     }
+    //TODO: this base and dist this info should come from a options file
 
-    let base = Path::new("content");
+    let base = Path::new("pages");
     let dist = Path::new("dist");
 
     let file = File::open("syntaxes.packdump").expect("syntaxes.packdump not found — run with `--dump` first");

@@ -1,3 +1,12 @@
+{% set leftContainer = [
+  {"url": "/my-blog/", "textContent": "Home"},
+  {"url": "/my-blog/content-index/", "textContent": "Index"}
+] %}
+
+{% set rightContainer = [
+  {"url": "https://medium.com/@shadowrunner8095", "textContent": "Medium"},
+  {"url": "/my-blog/my-desing-process-for-a-navbar/", "textContent": "🌟 Featured"}
+] %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +41,7 @@
             margin-top: 16px;
         }
         p, pre{
-            margin-top: 20px;
+            margin-top: 24px;
         }
         pre {
             overflow-x: auto;
@@ -40,10 +49,14 @@
             max-width: 85vw;
             -webkit-overflow-scrolling: touch;
         }
+        li{
+            margin-top: 12px;
+        }
     </style>
       <script type="module" src="/my-blog/shared.js" ></script>
 </head>
 <body class="grid place-content-center">
+    {% include "navbar.html" %}
     <main class="max-w-5xl p-5 md:p-10">
         {% block body %}
             {{ body | safe }}

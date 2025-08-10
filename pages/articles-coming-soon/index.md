@@ -1,0 +1,22 @@
+# Articles coming soon
+
+- - Tinkering with rspress source code (how it works)
+- - Learning how to benchmark performance
+- - Javascriptless tricks to hide/show things in the client
+- - Understanding garbage collectors
+- - Tinkering with  tailwindcss source code (how it works)
+- - Code Tinkering
+- - Understanding how memory is allocated in the browser
+- - A case for React initialziation functions
+- - Understading how hydration works
+- - Understanding how server side rendering with React usually works
+- - Tinkering with rspack
+- - Creating a native node module with Neon
+- - Monorepos
+- - Ways I think I can make the code open source but change the implementation in npm
+- - Books I like
+- - Tinkering with google tag manager
+- - Understanding the performance API
+- - Is it good to defer analytics related scripts?
+- - Creating a llm.txt generator
+- - Understanding and creating a sitemap.xml

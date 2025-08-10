@@ -1,0 +1,109 @@
+<!-- TODO: generalice the menu for more steps -->
+<div class="skew-1 rotate-1 translate-y-5 sticky">
+  
+  <input hidden class="toggler" type="checkbox" id="toggler" />
+  <label class="
+    toggler-button
+    grid
+    w-15
+    min-h-15
+    rounded-r-full bg-blue-900 p-3
+    cursor-pointer
+    hover:bg-blue-400
+  " for="toggler" >
+    <div class="open gap-1">
+      <div class="rounded-2xl bg-white h-2 w-full">
+      </div>
+      <div class="rounded-2xl bg-white h-2 w-full">
+      </div>
+      <div class="rounded-2xl bg-white h-2 w-full">
+      </div>
+    </div>
+    
+    <div class="close translate-y-1/4">
+      <div class="rounded-2xl  bg-white h-2 rotate-45 translate-y-1/2" >
+      </div>
+      <div class="rounded-2xl bg-white h-2 -rotate-45 -translate-y-1/2" >
+      </div>
+    </div>
+  </label>
+
+
+  <navbar class="toggled-container block">
+    <div class="h-full max-w-[95%] grid grid-cols-2 grid-rows-2">
+      <div class="flex flex-col gap-2 p-3 z-10 w-[105%] bg-title-primary shadow-[4px_6px_0_0_var(--color-subtitle-primary)]">
+        {% for link in leftContainer %}
+          <a href="{{ link.url }}">{{ link.textContent }}</a>
+        {% endfor %}
+      </div>
+      <div class="
+        flex flex-col gap-2
+        p-3 col-end-3 row-end-3 w-[110%] 
+        -translate-y-2 bg-title-primary shadow-[4px_6px_0_0_var(--color-subtitle-primary)]
+      ">
+        {% for link in rightContainer %}
+          <a href="{{ link.url }}" {% if 'medium.com' in link.url %}target="_blank" rel="noopener"{% endif %}>{{ link.textContent }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </navbar>
+</div>
+<style>
+  input.toggler:not(:checked) ~ .toggled-container {
+  animation: fadeOut 0.4s forwards;
+}
+
+input.toggler:not(:checked) ~ .toggler-button .open {
+  display: grid;
+}
+
+input.toggler:not(:checked) ~ .toggler-button .close {
+  display: none;
+}
+
+input.toggler:checked ~ .toggled-container {
+  animation: fadeIn 0.4s forwards;
+}
+
+input.toggler:checked ~ .toggler-button .open {
+  display: none;
+}
+
+input.toggler:checked ~ .toggler-button .close {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateX(-100px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    max-height: unset;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+    height: 0;
+    transform: translateX(-100px);
+  }
+}
+
+input.toggler + * {
+  transition: all ease-in-out;
+}
+</style>
