@@ -1,3 +1,4 @@
+import { clientNavigation } from './features.json'
 async function getClienPageAheadOfTime(
     url: URL | string, 
     parser:DOMParser,
@@ -30,9 +31,11 @@ async function getClienPageAheadOfTime(
 
 }
 
+
+// execute to activate client side navigation
+const appendListeners = ()=>{
 let currentCleanUp;
 
-const { body } = document
 
 const parser = new DOMParser();
 
@@ -84,4 +87,7 @@ document.addEventListener('click', async (event)=>{
     // Update the URL and history
     history.pushState(null, '', target.href);
 })
+}
 
+if(clientNavigation)
+    appendListeners()
