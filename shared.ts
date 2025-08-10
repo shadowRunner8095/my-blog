@@ -39,10 +39,11 @@ const parser = new DOMParser();
 body.addEventListener('mouseover', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
- 
+    
     if(!isAnchor)
         return;
-
+    if((target as any).hasExtraMethods)
+        return;
      const { clientNavigation } = target.dataset
 
     if(clientNavigation !== 'hover')
@@ -61,10 +62,10 @@ body.addEventListener('click', async (event)=>{
         return;
 
     const { clientNavigation } = target.dataset
-    console.log(clientNavigation)
-    if((clientNavigation !== 'click') ||(clientNavigation !== 'hover'))
+
+    if((clientNavigation !== 'click') && (clientNavigation !== 'hover'))
         return;
-    console.log('azucar')
+
     event.preventDefault();
 
     const {
