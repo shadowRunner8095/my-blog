@@ -1,3 +1,4 @@
+#![warn(unused_extern_crates)]
 use std::{
     fs::{self, File},
     io::{BufReader, Write},
