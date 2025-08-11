@@ -287,9 +287,7 @@ fn main() {
 
     let sitemap_refs: Vec<&str> = sitemap_urls.iter().map(|s| s.as_str()).collect();
     let sitemap_path = dist.join("sitemap.xml");
-    if let Err(e) = write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
-        eprintln!("Failed to write sitemap: {}", e);
-    }
+
 
     // Process all markdown files and collect title + href info for index page
     let entries: Vec<_> = md_files
@@ -298,7 +296,9 @@ fn main() {
         .collect();
 
     println!("Processed all markdown files.");
-
+    if let Err(e) = write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
+        eprintln!("Failed to write sitemap: {}", e);
+    }
     if let Err(e) = create_index_page(dist, &entries, &mut env) {
         eprintln!("Failed to create index page: {}", e);
     } else {

@@ -24,6 +24,14 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Add Mermaid
 - [ ] Add support for multilanguage
 - [ ] Add animation of second step of navbar to transalte longest
+- [ ] Add support for a clean build downloading the binaries of the release and the binaries of esbuild and tailwind
+- [ ] Add a react static markup server that can import js client execution but no react hooks
+- [ ] Add tags system
+- [ ] Reorder pages by topic
+- [ ] Add read aloud
+- [ ] Create a read aloud controls component
+- [ ] Create a minutes to complete reading
+- [ ] Add article about AI agents
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
