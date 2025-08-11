@@ -1,4 +1,4 @@
-name: Binary Release
+name: Multi-platform Binary Release
 
 on:
   workflow_dispatch:
@@ -7,40 +7,89 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    runs-on: ubuntu-latest
+  build:
+    name: Build for ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary_name: workspace
+            archive_name: workspace-x86_64-linux.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: workspace.exe
+            archive_name: workspace-x86_64-windows.zip
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary_name: workspace
+            archive_name: workspace-x86_64-macos.tar.gz
+          - os: macos-14
+            target: aarch64-apple-darwin
+            binary_name: workspace
+            archive_name: workspace-aarch64-macos.tar.gz
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Rust
-        run: rustup update stable && rustup default stable
+      - name: Install Rust and build target
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup target add ${{ matrix.target }}
 
       - name: Build binary
-        run: cargo build --release --verbose
+        run: cargo build --release --target ${{ matrix.target }} --verbose
 
-      - name: Compress and Release
+      - name: Compress binary (for Unix-like OS)
+        if: runner.os != 'Windows'
+        run: tar -czvf ${{ matrix.archive_name }} -C target/${{ matrix.target }}/release ${{ matrix.binary_name }}
+
+      - name: Compress binary (for Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path target/${{ matrix.target }}/release/${{ matrix.binary_name }} -DestinationPath ${{ matrix.archive_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.archive_name }}
+          path: ${{ matrix.archive_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release_artifacts
+
+      - name: Handle Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          TAG="rust-ubuntu-build"
+          TAG="latest-build"
 
-          # Compress the binary
-          tar -czvf workspace.tar.gz -C target/release workspace
-
-          # Check if release exists and delete it
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG found. Deleting it to replace with a new build."
             gh release delete "$TAG" --yes
-            # Also delete the git tag
             git push origin --delete "$TAG"
           else
             echo "Release $TAG not found. A new one will be created."
           fi
 
-          echo "Creating new release $TAG and uploading the compressed binary."
+          echo "Creating new release $TAG and uploading all binaries."
+
+          # Create the release first
           gh release create "$TAG" \
-            --title "Rust Build (Ubuntu)" \
-            --notes "Automated build of the workspace binary. This release is automatically updated on each run." \
-            workspace.tar.gz
+            --title "Latest Cross-Platform Build" \
+            --notes "Automated build of the workspace binary for multiple platforms. This release is automatically updated."
+
+          # Upload all downloaded artifacts.
+          # The structure is release_artifacts/<artifact_name>/<file_name>
+          find release_artifacts -type f -print0 | xargs -0 -I {} gh release upload "$TAG" {}
