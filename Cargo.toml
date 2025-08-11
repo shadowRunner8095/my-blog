@@ -1,27 +1,4 @@
-[package]
-name = "workspace"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-anyhow = "1.0.98"
-clap = { version = "4.5.43", features = ["derive"] }
-glob = "0.3.2"
-minijinja = { version = "2.11.0", features = ["loader"] }
-pulldown-cmark = "0.13.0"
-quick-xml = "0.38.1"
-rayon = "1.10.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9.34"
-swc = "34.0.0"
-swc_bundler = "28.0.0"
-swc_common = "14.0.2"
-swc_ecma_ast = "14.0.0"
-swc_ecma_codegen = "16.0.0"
-swc_ecma_lexer = "22.0.2"
-swc_ecma_loader = "14.0.0"
-swc_ecma_parser = "22.0.3"
-swc_ecma_transforms_typescript = "26.0.0"
-swc_ecma_visit = "14.0.0"
-syntect = "5.2.0"
-tailwindcss-oxide = { git = "https://github.com/tailwindlabs/tailwindcss.git", subdir = "crates/oxide" }
+[workspace]
+members = [
+    "crates/ssg",
+]

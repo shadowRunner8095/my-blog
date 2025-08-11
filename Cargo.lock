@@ -1801,6 +1801,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "ssg"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "glob",
+ "minijinja",
+ "pulldown-cmark",
+ "quick-xml",
+ "rayon",
+ "serde",
+ "serde_yaml",
+ "swc",
+ "swc_bundler",
+ "swc_common",
+ "swc_ecma_ast",
+ "swc_ecma_codegen",
+ "swc_ecma_lexer",
+ "swc_ecma_loader",
+ "swc_ecma_parser",
+ "swc_ecma_transforms_typescript",
+ "swc_ecma_visit",
+ "syntect",
+ "tailwindcss-oxide",
+]
+
+[[package]]
 name = "st-map"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3505,33 +3532,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f42320e61fe2cfd34354ecb597f86f413484a798ba44a8ca1165c58d42da6c1"
 dependencies = [
  "bitflags 2.9.1",
-]
-
-[[package]]
-name = "workspace"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "glob",
- "minijinja",
- "pulldown-cmark",
- "quick-xml",
- "rayon",
- "serde",
- "serde_yaml",
- "swc",
- "swc_bundler",
- "swc_common",
- "swc_ecma_ast",
- "swc_ecma_codegen",
- "swc_ecma_lexer",
- "swc_ecma_loader",
- "swc_ecma_parser",
- "swc_ecma_transforms_typescript",
- "swc_ecma_visit",
- "syntect",
- "tailwindcss-oxide",
 ]
 
 [[package]]
