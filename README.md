@@ -21,7 +21,9 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Add dark/ligth mode
 - [ ] Add dev mode
 - [ ] Add cache between builds
-- [ ] Mermaid
+- [ ] Add Mermaid
+- [ ] Add support for multilanguage
+- [ ] Add animation of second step of navbar to transalte longest
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
