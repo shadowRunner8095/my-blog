@@ -32,6 +32,10 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Create a read aloud controls component
 - [ ] Create a minutes to complete reading
 - [ ] Add article about AI agents
+- [ ] Find/create the code that cleans the candidates to real classes
+- [ ] Create a standart in naming for avoiding scanning some files by oxide if has that sufix or prefix
+- [ ] Check the process of html syntax hihltinh
+- [ ] Acelerate binary builds with cache
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

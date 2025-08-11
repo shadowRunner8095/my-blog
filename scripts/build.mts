@@ -35,7 +35,9 @@ async function compileCss() {
     base: baseDir
   })
 
-  const { code: cssCompiled } = optimize(build(scanner.scan()), {
+  const candidates = scanner.scan();
+
+  const { code: cssCompiled } = optimize(build(candidates), {
     minify: true
   })
 
