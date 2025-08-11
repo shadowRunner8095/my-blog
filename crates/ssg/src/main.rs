@@ -203,7 +203,7 @@ fn process_md_file(
 fn dump_syntaxes() {
     let mut builder = SyntaxSet::load_defaults_newlines().into_builder();
     builder
-        .add_from_folder("syntaxes", true)
+        .add_from_folder("crates/ssg/syntaxes", true)
         .expect("Failed to load syntaxes");
     let ps = builder.build();
 
@@ -224,7 +224,7 @@ fn create_index_page(
     env: &mut Environment,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Load the index template from root folder (not templates/)
-    let index_template_str = fs::read_to_string("content-index.html")?;
+    let index_template_str = fs::read_to_string("crates/ssg/content-index.html")?;
 
     env.add_template_owned("content-index.html", index_template_str)?;
 
@@ -264,7 +264,7 @@ fn main() {
 
     let base = Path::new(&cli.base);
     let dist = Path::new(&cli.dist);
-    let file = File::open("syntaxes.packdump").expect("syntaxes.packdump not found — run with `--dump` first");
+    let file = File::open("crates/ssg/syntaxes.packdump").expect("syntaxes.packdump not found — run with `--dump` first");
     let reader = BufReader::new(file);
     let ps: SyntaxSet = syntect::dumps::from_reader(reader).expect("Failed to read syntaxes.packdump");
 
@@ -272,7 +272,7 @@ fn main() {
     let theme = &ts.themes["base16-ocean.dark"];
 
     let mut env = Environment::new();
-    env.set_loader(minijinja::path_loader("templates"));
+    env.set_loader(minijinja::path_loader("crates/ssg/templates"));
 
     let md_files = get_md_files(base);
     println!("Found {} markdown files", md_files.len());
