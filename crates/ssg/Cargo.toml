@@ -4,13 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+ssg-generator-utils = { path = "../ssg-generator-utils" }
 clap = { version = "4.5.43", features = ["derive"] }
 glob = "0.3.2"
-minijinja = { version = "2.11.0", features = ["loader"] }
-pulldown-cmark = "0.13.0"
-quick-xml = "0.38.1"
-rayon = "1.10.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9.34"
-syntect = "5.2.0"
 tailwindcss-oxide = { git = "https://github.com/tailwindlabs/tailwindcss.git", subdir = "crates/oxide" }
+syntect = "5.2.0"
