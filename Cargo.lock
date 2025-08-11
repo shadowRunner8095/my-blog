@@ -803,6 +803,15 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "glob",
+ "ssg-generator-utils",
+ "syntect",
+ "tailwindcss-oxide",
+]
+
+[[package]]
+name = "ssg-generator-utils"
+version = "0.1.0"
+dependencies = [
  "minijinja",
  "pulldown-cmark",
  "quick-xml",
@@ -810,7 +819,6 @@ dependencies = [
  "serde",
  "serde_yaml",
  "syntect",
- "tailwindcss-oxide",
 ]
 
 [[package]]

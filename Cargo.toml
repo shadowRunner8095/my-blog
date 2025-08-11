@@ -2,4 +2,5 @@
 resolver = "2"
 members = [
     "crates/ssg",
+    "crates/ssg-generator-utils",
 ]
