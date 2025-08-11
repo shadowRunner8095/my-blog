@@ -15,20 +15,20 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            binary_name: workspace
-            archive_name: workspace-x86_64-linux.tar.gz
+            binary_name: ssg
+            archive_name: ssg-x86_64-linux.tar.gz
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            binary_name: workspace.exe
-            archive_name: workspace-x86_64-windows.zip
+            binary_name: ssg.exe
+            archive_name: ssg-x86_64-windows.zip
           - os: macos-latest
             target: x86_64-apple-darwin
-            binary_name: workspace
-            archive_name: workspace-x86_64-macos.tar.gz
+            binary_name: ssg
+            archive_name: ssg-x86_64-macos.tar.gz
           - os: macos-14
             target: aarch64-apple-darwin
-            binary_name: workspace
-            archive_name: workspace-aarch64-macos.tar.gz
+            binary_name: ssg
+            archive_name: ssg-aarch64-macos.tar.gz
 
     steps:
       - name: Checkout
@@ -88,7 +88,7 @@ jobs:
           # Create the release first
           gh release create "$TAG" \
             --title "Latest Cross-Platform Build" \
-            --notes "Automated build of the workspace binary for multiple platforms. This release is automatically updated."
+            --notes "Automated build of the ssg binary for multiple platforms. This release is automatically updated."
 
           # Upload all downloaded artifacts.
           # The structure is release_artifacts/<artifact_name>/<file_name>
