@@ -1,15 +1,38 @@
 use std::{
-    env,
     fs::{self, File},
     io::{BufReader, Write},
-    path::{Path, PathBuf},
+    path::{Path, PathBuf}
 };
+use clap::Parser;
+#[derive(Parser, Debug)]
+#[command(author, version, about = "Static site generator", long_about = None)]
+struct Cli {
+    /// Content source directory
+    #[arg(long, default_value = "pages")]
+    base: String,
+
+    /// Output directory
+    #[arg(long, default_value = "dist")]
+    dist: String,
+
+    /// Base domain for sitemap URLs (should include protocol and trailing slash)
+    #[arg(long, default_value = "https://shadowrunner8095.github.io/my-blog/")]
+    domain: String,
+
+    /// Dump syntaxes and exit
+    #[arg(long)]
+    dump: bool,
+}
+
 use glob::glob;
 use rayon::prelude::*;
-use pulldown_cmark::{Parser, Options, html, Event, Tag, CodeBlockKind, TagEnd};
+use pulldown_cmark::{Parser as MdParser, Options, html, Event, Tag, CodeBlockKind, TagEnd};
 use syntect::{parsing::SyntaxSet, highlighting::ThemeSet, html::highlighted_html_for_string};
 use serde::Deserialize;
 use minijinja::{Environment, context};
+use tailwindcss_oxide::scanner::{Scanner, sources::PublicSourceEntry};
+
+use crate::sitemap::write_sitemap;
 
 #[derive(Deserialize, Debug, Default, Clone)]
 struct Meta {
@@ -52,7 +75,7 @@ fn markdown_to_html(md: &str, ps: &SyntaxSet, theme: &syntect::highlighting::The
     options.insert(Options::ENABLE_STRIKETHROUGH);
     options.insert(Options::ENABLE_TASKLISTS);
 
-    let parser = Parser::new_ext(md, options);
+    let parser = MdParser::new_ext(md, options);
     let mut html_output = String::new();
     let mut in_code_block = false;
     let mut code_lang = None;
@@ -228,18 +251,19 @@ fn create_index_page(
 
     Ok(())
 }
+mod sitemap;
+
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() > 1 && args[1] == "--dump" {
+    let cli = Cli::parse();
+
+    if cli.dump {
         dump_syntaxes();
         return;
     }
-    //TODO: this base and dist this info should come from a options file
 
-    let base = Path::new("content");
-    let dist = Path::new("dist");
-
+    let base = Path::new(&cli.base);
+    let dist = Path::new(&cli.dist);
     let file = File::open("syntaxes.packdump").expect("syntaxes.packdump not found — run with `--dump` first");
     let reader = BufReader::new(file);
     let ps: SyntaxSet = syntect::dumps::from_reader(reader).expect("Failed to read syntaxes.packdump");
@@ -253,6 +277,20 @@ fn main() {
     let md_files = get_md_files(base);
     println!("Found {} markdown files", md_files.len());
 
+    //TODO: the sitemap needs a changefreq and priority tags also
+    let domain = cli.domain.trim_end_matches('/');
+    let sitemap_urls: Vec<String> = md_files.iter().map(|p| {
+        let rel = p.strip_prefix(base).unwrap();
+        let url = rel.with_extension("html").to_string_lossy().replace('\\', "/");
+        format!("{}/{}", domain, url)
+    }).collect();
+
+    let sitemap_refs: Vec<&str> = sitemap_urls.iter().map(|s| s.as_str()).collect();
+    let sitemap_path = dist.join("sitemap.xml");
+    if let Err(e) = write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
+        eprintln!("Failed to write sitemap: {}", e);
+    }
+
     // Process all markdown files and collect title + href info for index page
     let entries: Vec<_> = md_files
         .par_iter()
@@ -264,7 +302,18 @@ fn main() {
     if let Err(e) = create_index_page(dist, &entries, &mut env) {
         eprintln!("Failed to create index page: {}", e);
     } else {
-        println!("Index page generated at dist/content-index/index.html");
+        println!("Index page generated at {}/content-index/index.html", cli.dist);
+    }
+
+    let mut scanner = Scanner::new(vec![PublicSourceEntry{
+        base: dist.to_string_lossy().to_string(),
+        pattern: "**/*.html".into(),
+        negated: false,
+    }]);
+
+    let candidates_path = dist.join("candidates.txt");
+    if let Err(e) = fs::write(&candidates_path, scanner.scan().join(" ")) {
+        eprintln!("Failed to write candidates.txt: {}", e);
     }
 
     println!("All done!");

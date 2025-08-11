@@ -18,14 +18,14 @@ async function compileJS(){
 
 async function compileCss() {
   const cssConfig = await readFile(join(baseDir, "main.css"), {
-    encoding: 'utf-8'
+    encoding: 'utf-8',
   })
   const scanner = new Scanner({
     sources: [{
       base: join(baseDir, 'dist'),
       negated: false,
-      pattern: '**/*.html'
-    }]
+      pattern: 'candidates.txt'
+    }],
   })
 
 
@@ -36,7 +36,7 @@ async function compileCss() {
   })
 
   const { code: cssCompiled } = optimize(build(scanner.scan()), {
-    // minify: true
+    minify: true
   })
 
   return writeFile(join(baseDir, 'dist', 'main.css'), cssCompiled)
