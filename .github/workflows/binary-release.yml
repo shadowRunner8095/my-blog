@@ -1,0 +1,46 @@
+name: Binary Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build binary
+        run: cargo build --release --verbose
+
+      - name: Compress and Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          TAG="rust-ubuntu-build"
+
+          # Compress the binary
+          tar -czvf workspace.tar.gz -C target/release workspace
+
+          # Check if release exists and delete it
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG found. Deleting it to replace with a new build."
+            gh release delete "$TAG" --yes
+            # Also delete the git tag
+            git push origin --delete "$TAG"
+          else
+            echo "Release $TAG not found. A new one will be created."
+          fi
+
+          echo "Creating new release $TAG and uploading the compressed binary."
+          gh release create "$TAG" \
+            --title "Rust Build (Ubuntu)" \
+            --notes "Automated build of the workspace binary. This release is automatically updated on each run." \
+            workspace.tar.gz
