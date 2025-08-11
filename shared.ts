@@ -11,7 +11,7 @@ async function getClienPageAheadOfTime(
 
     const extraStyles = fetchedHead.querySelectorAll('style')
 
- 
+    //TODO:  herre I can add to the new document head the needed scripts and css?
 
     return {
         appendExtraStyles(targetDocument = document){
@@ -30,7 +30,6 @@ async function getClienPageAheadOfTime(
     }
 
 }
-
 
 // execute to activate client side navigation
 const appendListeners = ()=>{
@@ -60,7 +59,7 @@ document.addEventListener('mouseover', async (event)=>{
 document.addEventListener('click', async (event)=>{
     const { target } = event
     const isAnchor = target instanceof HTMLAnchorElement
-  console.log(isAnchor, target)
+
     if(!isAnchor)
         return;
 

@@ -9,10 +9,13 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - All content and code are open source.
 
 ## Roadmap
-- [ ] Add google tracking
+- [x] Add google tracking
+- [x] Modularize tracking
 - [x] Create a framework to autogenerate the website files
-- [ ] Improve the code for the SSG of the blog
-- [ ] Change folder strcuture to a pnpm/cargo monorepo/workspace
+- [ ] Improve the code for the SSG generator of the blog
+- [x] Change folder strcuture to a pnpm/cargo monorepo/workspace
+- [ ] Transform the ssg generator to a lib
+- [ ] Change of place the pages and css and client js
 - [ ] Add contributing.md
 - [ ] Document how to add new pages
 - [ ] Add client side navigation posibility
@@ -36,6 +39,8 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Create a standart in naming for avoiding scanning some files by oxide if has that sufix or prefix
 - [ ] Check the process of html syntax hihltinh
 - [ ] Acelerate binary builds with cache
-
+- [ ] Does github actions allows us to run only especific jobs in a new pristine run? chances are that not and the way to resolve this is with composition of reusing workflopws
+- [ ] Optimice client routing with service worker cache
+- [ ] Otpimice with idlleCallback the client routing
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
