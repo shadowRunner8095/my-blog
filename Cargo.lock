@@ -816,6 +816,7 @@ dependencies = [
  "pulldown-cmark",
  "quick-xml",
  "rayon",
+ "regex",
  "serde",
  "serde_yaml",
  "syntect",

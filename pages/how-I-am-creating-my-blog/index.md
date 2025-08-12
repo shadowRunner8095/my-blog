@@ -21,6 +21,13 @@ Basically I need some glue code for all of that
 Surely uploading the compiled binary of rust is not actually a good practice, but
 trying to make it run as a script thing is just too slow beacuse we need the compilation process first
 
+<exclude-from-llm-txt>
+Not show in llm txt
+</exclude-from-llm-txt>
+
+<only-in-llm-txt>
+I only be in the copy
+</only-in-llm-txt>
 An idea for that is to publish to github releases. This tool will rarely change so 
 another option could be npm pacakges or the gh registry.
 
