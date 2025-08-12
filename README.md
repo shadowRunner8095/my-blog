@@ -47,5 +47,17 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Optimice client routing with service worker cache
 - [ ] Otpimice with idlleCallback the client routing
 - [ ] Document use case of swe agent in mi daily life how I can let do this tasks while designning and learning
+- [ ] Add article about Polya and problem solving
+- [ ] Add article about eicked problems
+- [ ] Create sandboxes for swe coding agents and instruction files
+- [ ] Create article of the prev
+- [ ] Add tests
+- [ ] Add autogeneration of index of contents as a feature thatn can be opt out 
+- [ ] Implement a translator form bash to windows scripts and viceversa to automatically put that info in md
+- [ ] Auto insert links to ai related files in the htmls in order to make easier for web scrappers or even devs
+- [ ] Implement a fast copy for code snipets, this means the original content shoudl be preserved somewhere, i was thinking on a data tribute but hased or base64 and then js listens to the copy button and reads the data atribute and copies to clipboard
+- [ ] Create a way to orchstate independent deploys to stack blitz of examples
+- [ ] Can a devcontainer work with two different repos?
+
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

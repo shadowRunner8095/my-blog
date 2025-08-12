@@ -1,5 +1,6 @@
 #![warn(unused_extern_crates)]
 use std::{
+    collections::HashSet,
     fs::{self, File},
     io::{BufReader},
     path::{Path, PathBuf},
@@ -121,7 +122,13 @@ fn folder_name_to_title(folder: &Path) -> String {
         .unwrap_or_else(|| "Untitled".to_string())
 }
 
-fn markdown_to_html(md: &str, ps: &SyntaxSet, theme: &syntect::highlighting::Theme) -> String {
+fn markdown_to_html(
+    md: &str,
+    ps: &SyntaxSet,
+    theme: &syntect::highlighting::Theme,
+    omit_languages: &HashSet<String>,
+    disable_syntax_highlighting: bool,
+) -> String {
     let mut options = Options::empty();
     options.insert(Options::ENABLE_TABLES);
     options.insert(Options::ENABLE_FOOTNOTES);
@@ -133,36 +140,55 @@ fn markdown_to_html(md: &str, ps: &SyntaxSet, theme: &syntect::highlighting::The
     let mut in_code_block = false;
     let mut code_lang = None;
     let mut code_content = String::new();
+    let mut code_block_kind = None;
     let mut events = Vec::new();
 
     for event in parser {
-        match &event {
+        match event {
             Event::Start(Tag::CodeBlock(kind)) => {
                 in_code_block = true;
-                code_lang = match kind {
+                code_lang = match &kind {
                     CodeBlockKind::Fenced(lang) => Some(lang.to_string()),
                     _ => None,
                 };
+                code_block_kind = Some(kind);
                 code_content.clear();
             }
             Event::End(TagEnd::CodeBlock) => {
-                let syntax = code_lang
-                    .as_deref()
-                    .and_then(|lang| ps.find_syntax_by_token(lang))
-                    .unwrap_or_else(|| ps.find_syntax_plain_text());
-                let mut highlighted =
-                    highlighted_html_for_string(&code_content, ps, syntax, theme).unwrap();
-                if highlighted.ends_with('\n') {
-                    highlighted.pop();
-                }
-                events.push(Event::Html(highlighted.into()));
                 in_code_block = false;
+
+                let should_highlight = if disable_syntax_highlighting {
+                    false
+                } else if let Some(lang) = &code_lang {
+                    !omit_languages.contains(lang)
+                } else {
+                    true // Highlight if no language is specified
+                };
+
+                if should_highlight {
+                    let syntax = code_lang
+                        .as_deref()
+                        .and_then(|lang| ps.find_syntax_by_token(lang))
+                        .unwrap_or_else(|| ps.find_syntax_plain_text());
+                    let mut highlighted =
+                        highlighted_html_for_string(&code_content, ps, syntax, theme).unwrap();
+                    if highlighted.ends_with('\n') {
+                        highlighted.pop();
+                    }
+                    events.push(Event::Html(highlighted.into()));
+                } else {
+                    events.push(Event::Start(Tag::CodeBlock(
+                        code_block_kind.take().unwrap(),
+                    )));
+                    events.push(Event::Text(code_content.clone().into()));
+                    events.push(Event::End(TagEnd::CodeBlock));
+                }
             }
             Event::Text(text) if in_code_block => {
                 code_content.push_str(&text);
             }
             _ if in_code_block => {}
-            _ => events.push(event),
+            other => events.push(other),
         }
     }
 
@@ -192,7 +218,7 @@ fn markdown_to_html(md: &str, ps: &SyntaxSet, theme: &syntect::highlighting::The
 ///
 /// ```ignore
 /// // Example (non-compiling stub): call with appropriate SyntaxSet, Theme and Minijinja Environment.
-/// let result = process_md_file(src_path, base_path, dist_path, &ps, &theme, &env, Some(true));
+/// let result = process_md_file(src_path, base_path, dist_path, &ps, &theme, &env, Some(true), &Default::default(), false);
 /// if let Some((title, href, md_rel, llm_desc, copied)) = result {
 ///     println!("Generated {} -> {}, md copied: {}", title, href, copied);
 /// }
@@ -205,6 +231,8 @@ fn process_md_file(
     theme: &syntect::highlighting::Theme,
     env: &Environment,
     generate_llm_txt_by_default: Option<bool>,
+    omit_languages: &HashSet<String>,
+    disable_syntax_highlighting: bool,
 ) -> Option<(String, String, Option<String>, Option<String>, bool)> {
     let md_content = match fs::read_to_string(src_path) {
         Ok(content) => content,
@@ -233,7 +261,13 @@ fn process_md_file(
     let md_content_no_exclude_tag = remove_tag_only(&md_content, "exclude-from-llm-txt");
     // Remove <only-in-llm-txt> tags AND their content before HTML generation
     let md_content_no_tags = remove_tag_and_contents(&md_content_no_exclude_tag, "only-in-llm-txt");
-    let body_html = markdown_to_html(&md_content_no_tags, ps, theme);
+    let body_html = markdown_to_html(
+        &md_content_no_tags,
+        ps,
+        theme,
+        omit_languages,
+        disable_syntax_highlighting,
+    );
 
     let template_name = meta.extends.as_deref().unwrap_or("base.html");
     let rendered = if let Some(tmpl) = env.get_template(template_name).ok() {
@@ -439,6 +473,8 @@ fn create_index_page(
 ///     Some(false),
 ///     None,
 ///     None,
+///     &Default::default(),
+///     false,
 /// );
 /// assert!(res.is_ok());
 /// ```
@@ -453,6 +489,8 @@ pub fn generate_site(
     generate_llm_txt_by_default: Option<bool>,
     llms_title: Option<&str>,
     llms_description: Option<&str>,
+    omit_languages: &HashSet<String>,
+    disable_syntax_highlighting: bool,
 ) -> Result<(Vec<(String, String, Option<String>, Option<String>)>, Vec<String>), Box<dyn std::error::Error>> {
     let file = File::open(syntaxes_path.join("syntaxes.packdump"))?;
     let reader = BufReader::new(file);
@@ -476,7 +514,19 @@ pub fn generate_site(
 
     let results: Vec<_> = md_files
         .par_iter()
-        .filter_map(|file| process_md_file(file, base_path, dist_path, &ps, theme, &env, generate_llm_txt_by_default))
+        .filter_map(|file| {
+            process_md_file(
+                file,
+                base_path,
+                dist_path,
+                &ps,
+                theme,
+                &env,
+                generate_llm_txt_by_default,
+                omit_languages,
+                disable_syntax_highlighting,
+            )
+        })
         .collect();
     let entries: Vec<_> = results.iter().map(|(title, href, _, _, _)| (title.clone(), href.clone())).collect();
     let md_paths: Vec<String> = results.iter().filter_map(|(_, _, md, _, md_copied)| if *md_copied { md.clone() } else { None }).collect();
