@@ -499,7 +499,7 @@ pub fn generate_site(
     if !llms_description.trim().is_empty() {
         writeln!(llms_tx, "{}\n", llms_description.trim()).ok();
     }
-    writeln!(llms_tx, "Contents\n").ok();
+    writeln!(llms_tx, "## Contents\n").ok();
     for (title, href, _md, llm_description, md_copied) in &results {
         if !md_copied { continue; }
         // Remove any leading "/my-blog" or similar base path from href before joining with domain
