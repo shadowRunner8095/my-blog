@@ -10,8 +10,44 @@
             With the Heart of a Computer
             Wizard
          </h1>
-        <img aria-hidden="true" class="block rounded-2xl" src="./assets/wizard.lulita.webp"
-            alt="a funny dog with clothes and typing in a computer" width="200" height="200" />
+         <svg xmlns="http://www.w3.org/2000/svg" class="place-self-center max-w-96" viewBox="0 0 400 400" width="100%" height="400">
+          <g shape-rendering="crispEdges" transform="scale(20)">
+            <!-- Computer body -->
+            <rect x="2" y="6" width="16" height="10" fill="#9aa0a6"/>
+            <rect x="2" y="6" width="16" height="1" fill="#8b9096"/> <!-- top edge -->
+            <rect x="2" y="15" width="16" height="1" fill="#6b6f74"/> <!-- bottom edge -->
+            <!-- Screen -->
+            <rect x="4" y="7" width="12" height="7" fill="#0b0b0b"/>
+            <!-- screen border -->
+            <rect x="4" y="7" width="12" height="1" fill="#1c1c1c"/>
+            <rect x="4" y="13" width="12" height="1" fill="#1c1c1c"/>
+            <rect x="4" y="7" width="1" height="7" fill="#1c1c1c"/>
+            <rect x="15" y="7" width="1" height="7" fill="#1c1c1c"/>
+            <!-- Green terminal-like shapes -->
+            <rect x="6" y="9" width="2" height="1" fill="#00ff66"/>
+            <rect x="9" y="9" width="3" height="1" fill="#00ff66"/>
+            <rect x="6" y="11" width="4" height="1" fill="#00ff66"/>
+            <rect x="11" y="11" width="2" height="1" fill="#00ff66"/>
+            <rect x="7" y="16" width="6" height="1" fill="#6b6f74"/>
+            <rect x="4" y="17" width="12" height="1" fill="#52565a"/>
+            <rect x="6" y="4" width="8" height="1" fill="#2e0854"/>
+            <rect x="5" y="4" width="1" height="1" fill="#2e0854"/>
+            <rect x="14" y="4" width="1" height="1" fill="#2e0854"/>
+            <rect x="9" y="0" width="2" height="1" fill="#5a1980"/>
+            <rect x="8" y="1" width="4" height="1" fill="#5a1980"/>
+            <rect x="7" y="2" width="6" height="1" fill="#5a1980"/>
+            <rect x="6" y="3" width="8" height="1" fill="#5a1980"/>
+            <rect x="5" y="5" width="11" height="1" fill="#5a1980"/>
+            <rect x="10" y="0" width="1" height="1" fill="#8a39c8"/>
+            <rect x="9" y="1" width="1" height="1" fill="#8a39c8"/>
+            <rect x="8" y="2" width="1" height="1" fill="#8a39c8"/>
+            <rect x="9" y="2" width="1" height="1" fill="#ffd36b"/>
+            <rect x="11" y="1" width="1" height="1" fill="#ffd36b"/>
+            <rect x="8" y="3" width="1" height="1" fill="#ffd36b"/>
+          </g>
+        </svg>
+        <!-- <img hidden aria-hidden="true" class="block rounded-2xl" src="./assets/wizard.lulita.webp"
+            alt="a funny dog with clothes and typing in a computer" width="200" height="200" /> -->
          <h2 class="text-subtitle-primary font-bold text-center text-3xl!">On my journey, my dreams, and the
             ideas along the way...
          </h2>
