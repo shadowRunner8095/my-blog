@@ -10,56 +10,8 @@
             With the Heart of a Computer
             Wizard
          </h1>
-         <svg xmlns="http://www.w3.org/2000/svg"
-            width="100%" height="100%" viewBox="0 0 32 16"
-            shape-rendering="crispEdges"
-            class="rounded-2xl"
-          >
-            <rect x="1" y="1" width="11" height="8" fill="#6b6b6b"/>
-            <rect x="2" y="2" width="9" height="6" fill="#081024"/>
-            <rect x="3" y="3" width="1" height="1" fill="#2fe8ff"/>
-            <rect x="5" y="3" width="3" height="1" fill="#2fe8ff"/>
-            <rect x="3" y="5" width="6" height="1" fill="#2fe8ff"/>
-            <rect x="10" y="6" width="1" height="1" fill="#2fe8ff"/>
-            <rect x="1" y="9" width="11" height="1" fill="#2b2b2b"/>
-            <rect x="5" y="10" width="3" height="1" fill="#6b6b6b"/>
-            <rect x="4" y="11" width="5" height="1" fill="#2b2b2b"/>
-            <rect x="1" y="12" width="11" height="2" fill="#8b8b8b"/>
-            <rect x="2" y="12" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="4" y="12" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="6" y="12" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="8" y="12" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="3" y="13" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="5" y="13" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="7" y="13" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="9" y="13" width="1" height="1" fill="#bfbfbf"/>
-            <rect x="12" y="13" width="1" height="1" fill="#2b2b2b"/>
-<rect x="24" y="1" width="1" height="1" fill="#3f0066"/>
-            <rect x="23" y="2" width="3" height="1" fill="#3f0066"/>
-            <rect x="22" y="3" width="5" height="1" fill="#3f0066"/>
-            <rect x="23" y="4" width="3" height="1" fill="#9900cc"/>
-            <rect x="24" y="5" width="1" height="1" fill="#f4c2a1"/>
-            <rect x="23" y="6" width="3" height="1" fill="#f4c2a1"/>
-            <rect x="23" y="7" width="1" height="1" fill="#ffffff"/>
-            <rect x="24" y="7" width="1" height="1" fill="#ffffff"/>
-            <rect x="25" y="7" width="1" height="1" fill="#ffffff"/>
-            <rect x="22" y="8" width="5" height="4" fill="#6a0dad"/>
-            <rect x="22" y="10" width="1" height="2" fill="#9900cc"/>
-            <rect x="26" y="10" width="1" height="2" fill="#3f0066"/>
-            <rect x="27" y="9" width="1" height="1" fill="#6a0dad"/>
-            <rect x="28" y="10" width="1" height="1" fill="#f4c2a1"/>
-            <rect x="29" y="9" width="1" height="5" fill="#8b5a2b"/>
-            <rect x="29" y="8" width="1" height="1" fill="#2fe8ff"/>
-            <rect x="23" y="12" width="1" height="1" fill="#2b2b2b"/>
-            <rect x="25" y="12" width="1" height="1" fill="#2b2b2b"/>
-            <rect x="28" y="7" width="1" height="1" fill="#2fe8ff"/>
-            <rect x="30" y="7" width="1" height="1" fill="#2fe8ff"/>
-            <rect x="1" y="1" width="1" height="1" fill="#000000" opacity="0.06"/>
-            <rect x="11" y="1" width="1" height="1" fill="#000000" opacity="0.06"/>
-            <rect x="18" y="8" width="1" height="1" fill="#000000" opacity="0.06"/>
-         </svg>
-         <!-- <img hidden aria-hidden="true" class="block md:hidden rounded-2xl" src="./assets/wizard.lulita.webp"
-            alt="a funny dog with clothes and typing in a computer" width="200" height="200" /> -->
+        <img hidden aria-hidden="true" class="block md:hidden rounded-2xl" src="./assets/wizard.lulita.webp"
+            alt="a funny dog with clothes and typing in a computer" width="200" height="200" />
          <h2 class="text-subtitle-primary font-bold text-center text-3xl!">On my journey, my dreams, and the
             ideas along the way...
          </h2>
