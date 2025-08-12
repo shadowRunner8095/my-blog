@@ -109,14 +109,18 @@ fn main() {
     let llms_title = main_meta_inf.llm_title.as_deref();
     let llms_description = main_meta_inf.llm_description.as_deref();
 
-    let omit_languages: HashSet<String> = cli
-        .omit_languages
-        .as_deref()
-        .unwrap_or("")
-        .split(',')
-        .map(String::from)
-        .filter(|s| !s.is_empty())
-        .collect();
+    let omit_languages: HashSet<String> = match cli.omit_languages {
+        Some(langs) => langs
+            .split(',')
+            .map(String::from)
+            .filter(|s| !s.is_empty())
+            .collect(),
+        None => {
+            let mut default = HashSet::new();
+            default.insert("mermaid".to_string());
+            default
+        }
+    };
 
     if let Err(e) = generate_site(
         md_files,
