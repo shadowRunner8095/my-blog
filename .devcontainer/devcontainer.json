@@ -14,7 +14,8 @@
         "bradlc.vscode-tailwindcss",
         "vscode-icons-team.vscode-icons",
         "sonarsource.sonarlint-vscode",
-        "ms-vscode.vscode-typescript-next"
+        "ms-vscode.vscode-typescript-next",
+        "bierner.markdown-mermaid"
       ]
     }
   },
