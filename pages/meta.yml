@@ -1,0 +1,3 @@
+omit_llm_txt_generation: true
+llm_description: "This is my personal blog, it has content about tech, computer science and programming"
+llm_title: "My path to become a Wizard Computer"

@@ -5,7 +5,7 @@ use std::{
 };
 use clap::Parser;
 use glob::glob;
-use ssg_generator_utils::generate_site;
+use ssg_generator_utils::{generate_site, load_meta};
 use syntect::parsing::SyntaxSet;
 use tailwindcss_oxide::scanner::{Scanner, sources::PublicSourceEntry};
 
@@ -73,6 +73,10 @@ fn main() {
     let templates_path = Path::new("crates/ssg-generator-utils/templates");
     let syntaxes_path = Path::new("crates/ssg-generator-utils/syntaxes");
     let content_index_path = Path::new("crates/ssg-generator-utils/content-index.html");
+    let main_meta_inf = load_meta(&base.join("meta.yml"));
+
+    let llms_title = main_meta_inf.llm_title.as_deref();
+    let llms_description = main_meta_inf.llm_description.as_deref();
 
     if let Err(e) = generate_site(
         md_files,
@@ -82,6 +86,9 @@ fn main() {
         templates_path,
         syntaxes_path,
         content_index_path,
+        Some(true),
+        llms_title,
+        llms_description,
     ) {
         eprintln!("Failed to generate site: {}", e);
     }

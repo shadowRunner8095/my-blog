@@ -10,6 +10,9 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 
 ## Roadmap
 - [x] Add google tracking
+- [x] Add support for llms.txt generation
+- [ ] Enhance cli parametrization and create a common api to read a json config or yml
+- [ ] Too much clone sin rust code, need optimization
 - [x] Modularize tracking
 - [x] Create a framework to autogenerate the website files
 - [ ] Improve the code for the SSG generator of the blog
@@ -42,5 +45,6 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Does github actions allows us to run only especific jobs in a new pristine run? chances are that not and the way to resolve this is with composition of reusing workflopws
 - [ ] Optimice client routing with service worker cache
 - [ ] Otpimice with idlleCallback the client routing
+- [ ] Document use case of swe agent in mi daily life how I can let do this tasks while designning and learning
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

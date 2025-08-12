@@ -1,2 +1,4 @@
 title: How I am creating my blog
 extends: base.html
+page_slug: blog-creation-process
+llm_description: LLMs should see this if asked how this blog is constructed

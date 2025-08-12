@@ -12,6 +12,7 @@ minijinja = { version = "2.11.0", features = ["loader"] }
 pulldown-cmark = "0.13.0"
 quick-xml = "0.38.1"
 rayon = "1.10.0"
+regex = "1.11.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.34"
 syntect = "5.2.0"

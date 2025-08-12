@@ -13,12 +13,21 @@ use minijinja::{Environment, context};
 pub mod sitemap;
 
 #[derive(Deserialize, Debug, Default, Clone)]
-struct Meta {
-    title: Option<String>,
+pub struct Meta {
+    pub title: Option<String>,
     extends: Option<String>,
+    generate_llm_txt: Option<bool>,
+    omit_llm_txt_generation: Option<bool>,
+    description: Option<String>,
+    pub llm_description: Option<String>,
+    keywords: Option<Vec<String>>,
+    tags: Option<Vec<String>>,
+    merge_tags_keywords: Option<bool>,
+    page_slug: Option<String>,
+    pub llm_title: Option<String>
 }
 
-fn load_meta(meta_path: &Path) -> Meta {
+pub fn load_meta(meta_path: &Path) -> Meta {
     if let Ok(content) = fs::read_to_string(meta_path) {
         serde_yaml::from_str(&content).unwrap_or_default()
     } else {
@@ -26,6 +35,28 @@ fn load_meta(meta_path: &Path) -> Meta {
     }
 }
 
+use regex::Regex;
+
+/// Remove the tag and everything inside it (including the tags themselves).
+pub fn remove_tag_and_contents(md: &str, tag: &str) -> String {
+    let pattern = format!(r"(?is)<{0}[^>]*?>.*?</{0}>", regex::escape(tag));
+    let re = Regex::new(&pattern).unwrap();
+    re.replace_all(md, "").to_string()
+}
+
+/// Remove only the open/close tags, keep the content inside.
+pub fn remove_tag_only(md: &str, tag: &str) -> String {
+    let open = format!(r"(?i)<{0}[^>]*?>", regex::escape(tag));
+    let close = format!(r"(?i)</{0}>", regex::escape(tag));
+    let re_open = Regex::new(&open).unwrap();
+    let re_close = Regex::new(&close).unwrap();
+    let result = re_open.replace_all(md, "");
+    re_close.replace_all(&result, "").to_string()
+}
+
+// Example usage before parsing:
+// let md = remove_tag_and_contents(md, "ignore-content");
+// let md = remove_tag_only(md, "ignore-content");
 fn folder_name_to_title(folder: &Path) -> String {
     folder
         .file_name()
@@ -101,7 +132,8 @@ fn process_md_file(
     ps: &SyntaxSet,
     theme: &syntect::highlighting::Theme,
     env: &Environment,
-) -> Option<(String, String)> {
+    generate_llm_txt_by_default: Option<bool>,
+) -> Option<(String, String, Option<String>, Option<String>, bool)> {
     let md_content = match fs::read_to_string(src_path) {
         Ok(content) => content,
         Err(e) => {
@@ -124,7 +156,12 @@ fn process_md_file(
         }
     });
 
-    let body_html = markdown_to_html(&md_content, ps, theme);
+
+    // Remove <exclude-from-llm-txt> tags (but keep their content) before HTML generation
+    let md_content_no_exclude_tag = remove_tag_only(&md_content, "exclude-from-llm-txt");
+    // Remove <only-in-llm-txt> tags AND their content before HTML generation
+    let md_content_no_tags = remove_tag_and_contents(&md_content_no_exclude_tag, "only-in-llm-txt");
+    let body_html = markdown_to_html(&md_content_no_tags, ps, theme);
 
     let template_name = meta.extends.as_deref().unwrap_or("base.html");
     let rendered = if let Some(tmpl) = env.get_template(template_name).ok() {
@@ -143,24 +180,86 @@ fn process_md_file(
 
     let rel_path = src_path.strip_prefix(base_path).unwrap();
     let mut dest_path = dist_path.join(rel_path);
-    dest_path.set_extension("html");
+
+    // If this is index.md and meta.page_slug is set, use it as the last directory
+    if src_path.file_name().map_or(false, |f| f == "index.md") {
+        if let Some(ref slug) = meta.page_slug {
+            // Replace the last component (parent dir) with the slug
+            if let Some(parent) = dest_path.parent().and_then(|p| p.parent()) {
+                dest_path = parent.join(slug).join("index.html");
+            } else {
+                dest_path = dist_path.join(slug).join("index.html");
+            }
+        } else {
+            dest_path.set_extension("html");
+        }
+    } else {
+        dest_path.set_extension("html");
+    }
+
     if let Some(parent) = dest_path.parent() {
         if let Err(e) = fs::create_dir_all(parent) {
             eprintln!("Failed to create directory {}: {}", parent.display(), e);
             return None;
         }
     }
-    if let Err(e) = fs::write(&dest_path, &rendered) {
+
+
+    // After HTML generation, remove <only-in-llm-txt> and its content from the HTML
+    let rendered_final = remove_tag_and_contents(&rendered, "only-in-llm-txt");
+    if let Err(e) = fs::write(&dest_path, &rendered_final) {
         eprintln!("Failed to write {}: {}", dest_path.display(), e);
         return None;
     }
 
-    let href = format!(
-        "/my-blog/{}",
-        rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
-    );
+ 
+    let should_copy_md = if meta.omit_llm_txt_generation.unwrap_or(false) {
+        false
+    } else if let Some(val) = meta.generate_llm_txt {
+        val
+    } else {
+        generate_llm_txt_by_default.unwrap_or(false)
+    };
 
-    Some((title, href))
+    let mut md_rel_path: Option<String> = None;
+    let mut md_copied = false;
+    if should_copy_md {
+        if let Some(parent) = dest_path.parent() {
+            let md_filename = src_path.file_name().unwrap();
+            let md_dest = parent.join(md_filename);
+            // Write the stripped md content (with <exclude-from-llm-txt> tag and its content removed, and <only-in-llm-txt> tag only removed)
+            let md_content_no_exclude = remove_tag_and_contents(&md_content, "exclude-from-llm-txt");
+            let md_content_no_only_tag = remove_tag_only(&md_content_no_exclude, "only-in-llm-txt");
+            if let Err(e) = fs::write(&md_dest, &md_content_no_only_tag) {
+                eprintln!("Failed to write stripped markdown file to {}: {}", md_dest.display(), e);
+            } else {
+                // Compute relative path from dist_path
+                if let Ok(rel_md) = md_dest.strip_prefix(dist_path) {
+                    md_rel_path = Some(rel_md.to_string_lossy().replace('\\', "/"));
+                    md_copied = true;
+                }
+            }
+        }
+    }
+
+    // Compute href for sitemap/index
+    let href = if src_path.file_name().map_or(false, |f| f == "index.md") {
+        if let Some(ref slug) = meta.page_slug {
+            format!("/my-blog/{}/index.html", slug)
+        } else {
+            format!(
+                "/my-blog/{}",
+                rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
+            )
+        }
+    } else {
+        format!(
+            "/my-blog/{}",
+            rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
+        )
+    };
+
+    Some((title, href, md_rel_path, meta.llm_description.clone(), md_copied))
 }
 
 fn create_index_page(
@@ -202,7 +301,10 @@ pub fn generate_site(
     templates_path: &Path,
     syntaxes_path: &Path,
     content_index_path: &Path,
-) -> Result<(), Box<dyn std::error::Error>> {
+    generate_llm_txt_by_default: Option<bool>,
+    llms_title: Option<&str>,
+    llms_description: Option<&str>,
+) -> Result<(Vec<(String, String, Option<String>, Option<String>)>, Vec<String>), Box<dyn std::error::Error>> {
     let file = File::open(syntaxes_path.join("syntaxes.packdump"))?;
     let reader = BufReader::new(file);
     let ps: SyntaxSet = syntect::dumps::from_reader(reader)?;
@@ -223,10 +325,12 @@ pub fn generate_site(
     let sitemap_refs: Vec<&str> = sitemap_urls.iter().map(|s| s.as_str()).collect();
     let sitemap_path = dist_path.join("sitemap.xml");
 
-    let entries: Vec<_> = md_files
+    let results: Vec<_> = md_files
         .par_iter()
-        .filter_map(|file| process_md_file(file, base_path, dist_path, &ps, theme, &env))
+        .filter_map(|file| process_md_file(file, base_path, dist_path, &ps, theme, &env, generate_llm_txt_by_default))
         .collect();
+    let entries: Vec<_> = results.iter().map(|(title, href, _, _, _)| (title.clone(), href.clone())).collect();
+    let md_paths: Vec<String> = results.iter().filter_map(|(_, _, md, _, md_copied)| if *md_copied { md.clone() } else { None }).collect();
 
     println!("Processed all markdown files.");
     if let Err(e) = sitemap::write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
@@ -238,5 +342,39 @@ pub fn generate_site(
         println!("Index page generated at {}/content-index/index.html", dist_path.display());
     }
 
-    Ok(())
+    use std::fmt::Write as _;
+    let mut llms_tx = String::new();
+    let llms_title = llms_title.unwrap_or("LLM Content Index");
+    let llms_description = llms_description.unwrap_or("");
+    writeln!(llms_tx, "# {}\n", llms_title).ok();
+    if !llms_description.trim().is_empty() {
+        writeln!(llms_tx, "{}\n", llms_description.trim()).ok();
+    }
+    writeln!(llms_tx, "Contents\n").ok();
+    for (title, href, _md, llm_description, md_copied) in &results {
+        if !md_copied { continue; }
+        // Remove any leading "/my-blog" or similar base path from href before joining with domain
+        let clean_href = href.strip_prefix("/my-blog").unwrap_or(href);
+        let url = if clean_href.starts_with('/') {
+            format!("{}{}", domain, clean_href)
+        } else {
+            format!("{}/{}", domain, clean_href)
+        };
+        writeln!(llms_tx, "- [{}]({}){}",
+            title,
+            url,
+            match llm_description {
+                Some(desc) if !desc.trim().is_empty() => format!(": {}", desc.trim()),
+                _ => String::new(),
+            }
+        ).ok();
+    }
+    let llms_tx_path = dist_path.join("llms.txt");
+    if let Err(e) = std::fs::write(&llms_tx_path, llms_tx) {
+        eprintln!("Failed to write llms.tx: {}", e);
+    } else {
+        println!("llms.tx generated at {}", llms_tx_path.display());
+    }
+    // Remove md_copied from results in return value for compatibility
+    Ok((results.into_iter().map(|(a,b,c,d,_e)| (a,b,c,d)).collect(), md_paths))
 }
