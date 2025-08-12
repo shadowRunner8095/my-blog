@@ -10,7 +10,7 @@
             With the Heart of a Computer
             Wizard
          </h1>
-        <img hidden aria-hidden="true" class="block md:hidden rounded-2xl" src="./assets/wizard.lulita.webp"
+        <img aria-hidden="true" class="block rounded-2xl" src="./assets/wizard.lulita.webp"
             alt="a funny dog with clothes and typing in a computer" width="200" height="200" />
          <h2 class="text-subtitle-primary font-bold text-center text-3xl!">On my journey, my dreams, and the
             ideas along the way...
