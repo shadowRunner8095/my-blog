@@ -13,6 +13,7 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [x] Add support for llms.txt generation
 - [ ] Enhance cli parametrization and create a common api to read a json config or yml
 - [ ] Too much clone sin rust code, need optimization
+- [ ] Add plugin system to ssg generator
 - [x] Modularize tracking
 - [x] Create a framework to autogenerate the website files
 - [ ] Improve the code for the SSG generator of the blog
