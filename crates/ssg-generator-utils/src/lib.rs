@@ -499,24 +499,22 @@ pub fn generate_site(
     if !llms_description.trim().is_empty() {
         writeln!(llms_tx, "{}\n", llms_description.trim()).ok();
     }
-    writeln!(llms_tx, "Contents\n").ok();
-    for (title, href, _md, llm_description, md_copied) in &results {
+    writeln!(llms_tx, "## Contents\n").ok();
+    for (title, _href, md, llm_description, md_copied) in &results {
+
         if !md_copied { continue; }
         // Remove any leading "/my-blog" or similar base path from href before joining with domain
-        let clean_href = href.strip_prefix("/my-blog").unwrap_or(href);
-        let url = if clean_href.starts_with('/') {
-            format!("{}{}", domain, clean_href)
-        } else {
-            format!("{}/{}", domain, clean_href)
-        };
-        writeln!(llms_tx, "- [{}]({}){}",
-            title,
-            url,
-            match llm_description {
-                Some(desc) if !desc.trim().is_empty() => format!(": {}", desc.trim()),
-                _ => String::new(),
-            }
-        ).ok();
+ 
+        if let Some(md_path) = md {
+            writeln!(llms_tx, "- [{}]({}){}",
+                title,
+                format!("{}/{}", domain, md_path),
+                match llm_description {
+                    Some(desc) if !desc.trim().is_empty() => format!(": {}", desc.trim()),
+                    _ => String::new(),
+                }
+            ).ok();
+        }
     }
     let llms_tx_path = dist_path.join("llms.txt");
     if let Err(e) = std::fs::write(&llms_tx_path, llms_tx) {
