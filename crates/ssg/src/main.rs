@@ -55,6 +55,28 @@ fn dump_syntaxes() {
     println!("Supported syntaxes list saved to syntaxes_supported.txt");
 }
 
+/// Entrypoint for the CLI: generate a static site or dump editor syntaxes.
+///
+/// Parses CLI arguments and either:
+/// - when `--dump` is set: dumps bundled syntaxes and exits; or
+/// - otherwise: generates the site from Markdown under the configured `base` directory into `dist`,
+///   loading metadata from `base/meta.yml` and passing optional `llm_title` and `llm_description` into the generator.
+/// The function also creates the `dist` directory if missing, writes a space-separated `candidates.txt` of scanned HTML files,
+/// and prints progress/errors to stdout/stderr.
+///
+/// Notes:
+/// - The CLI `domain` value should include the protocol and a trailing slash (e.g. `https://example.com/`).
+/// - This function performs filesystem IO (creates directories, writes files) and may print error messages instead of panicking.
+///
+/// # Examples
+///
+/// ```no_run
+/// // Run the program as a binary; example shows typical CLI invocation.
+/// // $ my_ssg --base pages --dist dist --domain https://example.com/
+/// std::env::set_var("RUST_BACKTRACE", "0");
+/// // `main()` is the process entrypoint and will perform filesystem operations when run.
+/// crate::main();
+/// ```
 fn main() {
     let cli = Cli::parse();
 
