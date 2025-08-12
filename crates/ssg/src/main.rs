@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     fs::{self, File},
     io::Write,
     path::{Path, PathBuf},
@@ -27,6 +28,14 @@ struct Cli {
     /// Dump syntaxes and exit
     #[arg(long)]
     dump: bool,
+
+    /// Comma-separated list of languages to omit from syntax highlighting
+    #[arg(long)]
+    omit_languages: Option<String>,
+
+    /// Disable syntax highlighting altogether
+    #[arg(long)]
+    no_syntax_highlighting: bool,
 }
 
 fn get_md_files(base_path: &Path) -> Vec<PathBuf> {
@@ -100,6 +109,15 @@ fn main() {
     let llms_title = main_meta_inf.llm_title.as_deref();
     let llms_description = main_meta_inf.llm_description.as_deref();
 
+    let omit_languages: HashSet<String> = cli
+        .omit_languages
+        .as_deref()
+        .unwrap_or("")
+        .split(',')
+        .map(String::from)
+        .filter(|s| !s.is_empty())
+        .collect();
+
     if let Err(e) = generate_site(
         md_files,
         base,
@@ -111,6 +129,8 @@ fn main() {
         Some(true),
         llms_title,
         llms_description,
+        &omit_languages,
+        cli.no_syntax_highlighting,
     ) {
         eprintln!("Failed to generate site: {}", e);
     }
