@@ -23,6 +23,12 @@ export function setupMermaid() {
                 src: 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js',
                 async: true,
             });
+            // @ts-expect-error
+            const mermaid = window.mermaid
+
+            await mermaid.init({
+                theme:'dark'
+            })
         } catch (error) {
             console.error('Failed to load Mermaid.js script:', error);
         }
