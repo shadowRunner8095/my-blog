@@ -109,34 +109,36 @@ sequenceDiagram
 ```
 
 ## Do We Need a Plugin and a Bundler to Implement This?
-- - **Consumer**: No.
+- \- **Consumer**: No.
 
-- - **Provider**: Realistically, yes — unless you want to reimplement the manifest contract and asset generation logic yourself.
+- \- **Provider**: Realistically, yes — unless you want to reimplement the manifest contract and asset generation logic yourself.
 
 For the consumer, you can use an enhanced runtime, configure it in your code, and start consuming federated modules right away.
 
 ## Design Principles
 Before jumping into a use case, here are some principles I’ve found useful:
 
-- - Remote modules should be stateless.
+- \- Remote modules should be stateless.
 
-- - The app shell is the glue code.
+- \- The app shell is the glue code.
 
-- - Expose behavior as part of your module’s API — let the shell configure it.
+- \- Expose behavior as part of your module’s API — let the shell configure it.
 
-- - Think of these modules like libraries.
+- \- Think of these modules like libraries.
 
-- - Avoid hardcoding defaults or implementing every possible behavior. Instead, expose generalizations, and offer optional “plug-and-play” defaults as separate modules.
+- \- Avoid hardcoding defaults or implementing every possible behavior. Instead, expose generalizations, and offer optional “plug-and-play” defaults as separate modules.
 
-- - Minimize side effects in remote modules (e.g., running code on load or modifying global scope).
+- \- Minimize side effects in remote modules (e.g., running code on load or modifying global scope).
 
-- - And remember: browsers mainly run JavaScript, CSS, and HTML. If I use Docker or another tool, that’s just for my build pipeline — not a requirement. The static asset generation process depends entirely on your available tools and stack.
+- \- And remember: browsers mainly run JavaScript, CSS, and HTML. If I use Docker or another tool, that’s just for my build pipeline — not a requirement. The static asset generation process depends entirely on your available tools and stack.
 
 ## Exploration: A Simple Playground
 
 If you want to try this locally, check [this reposittory](https://shadowrunner8095.github.io/module-federation-examples).
 
 For our example, I’ve exposed a module-federation.js bundle that contains the entire runtime (not ideal for production — this is just for learning) and a provider ready for you to consume.
+
+An implementation of this [is running online](https://shadowrunner8095.github.io/module-federation-examples/)
 
 Let’s try it — even without bundler integration — to see what happens.
 
