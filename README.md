@@ -58,6 +58,14 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Implement a fast copy for code snipets, this means the original content shoudl be preserved somewhere, i was thinking on a data tribute but hased or base64 and then js listens to the copy button and reads the data atribute and copies to clipboard
 - [ ] Create a way to orchstate independent deploys to stack blitz of examples
 - [ ] Can a devcontainer work with two different repos?
+- [ ] Add support for external remote markdown
+- [ ] Evaluate moving the markdows to another repository and a process there checks  what pages are new and only build them in case the process takes to much time
+- [ ] Add support for polls to check if the article was helpful
+- [ ] Automate republishing to medium and other plataforms
+- [ ] Enhance title and description to pass the base template
+- [ ] Check other template engines how to glue them
+- [ ] Learn more rust
+- [ ] Create a ligthwitgh codpen alike previsualization for html css and js code
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
