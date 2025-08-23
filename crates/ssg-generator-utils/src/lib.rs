@@ -212,7 +212,7 @@ fn markdown_to_html(
 /// Notes:
 /// - Side effects: creates directories, writes HTML files, and may write a stripped Markdown file.
 /// - Returns `None` if reading the source, creating directories, or writing output fails.
-/// - The returned `href_for_sitemap` is a path prefixed with `/my-blog/` suitable for sitemap/index entries.
+/// - The returned `href_for_sitemap` is a path prefixed with the configured `base_path` suitable for sitemap/index entries.
 ///
 /// # Examples
 ///
@@ -233,6 +233,7 @@ fn process_md_file(
     generate_llm_txt_by_default: Option<bool>,
     omit_languages: &HashSet<String>,
     disable_syntax_highlighting: bool,
+    base_path_str: &str,
 ) -> Option<(String, String, Option<String>, Option<String>, bool)> {
     let md_content = match fs::read_to_string(src_path) {
         Ok(content) => content,
@@ -274,6 +275,7 @@ fn process_md_file(
         tmpl.render(context! {
             title => &title,
             body => &body_html,
+            base_path => base_path_str,
         })
         .unwrap_or_else(|e| {
             eprintln!("Template render error for {}: {}", src_path.display(), e);
@@ -351,16 +353,18 @@ fn process_md_file(
     // Compute href for sitemap/index
     let href = if src_path.file_name().map_or(false, |f| f == "index.md") {
         if let Some(ref slug) = meta.page_slug {
-            format!("/my-blog/{}/index.html", slug)
+            format!("{}/{}/index.html", base_path_str, slug)
         } else {
             format!(
-                "/my-blog/{}",
+                "{}/{}",
+                base_path_str,
                 rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
             )
         }
     } else {
         format!(
-            "/my-blog/{}",
+            "{}/{}",
+            base_path_str,
             rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
         )
     };
@@ -374,7 +378,7 @@ fn process_md_file(
 /// renders it with `entries` mapped to `{ pages: [{ title, href }, ...], title: "Index Content" }`,
 /// and writes the result to `<dist_path>/content-index/index.html`.
 ///
-/// `entries` must be a slice of `(title, href)` pairs; any leading "/my-blog/" prefix in `href` is
+/// `entries` must be a slice of `(title, href)` pairs; any leading `base_path_str` prefix in `href` is
 /// stripped before rendering so links in the index are relative to the site root.
 ///
 /// Errors from file I/O or template rendering are propagated via the `Result`.
@@ -403,6 +407,7 @@ fn create_index_page(
     entries: &[(String, String)],
     env: &mut Environment,
     content_index_path: &Path,
+    base_path_str: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let index_template_str = fs::read_to_string(content_index_path)?;
 
@@ -411,7 +416,8 @@ fn create_index_page(
     let items: Vec<_> = entries
         .iter()
         .map(|(title, href)| {
-            let href = href.strip_prefix("/my-blog/").unwrap_or(href).to_string();
+            let prefix = format!("{}/", base_path_str);
+            let href = href.strip_prefix(&prefix).unwrap_or(href).to_string();
             context! { href => href, title => title.clone() }
         })
         .collect();
@@ -419,6 +425,7 @@ fn create_index_page(
     let rendered = env.get_template("content-index.html")?.render(context! {
         pages => items,
         title => "Index Content",
+        base_path => base_path_str,
     })?;
 
     let index_dir = dist_path.join("content-index");
@@ -491,6 +498,7 @@ pub fn generate_site(
     llms_description: Option<&str>,
     omit_languages: &HashSet<String>,
     disable_syntax_highlighting: bool,
+    base_path_str: &str,
 ) -> Result<(Vec<(String, String, Option<String>, Option<String>)>, Vec<String>), Box<dyn std::error::Error>> {
     let file = File::open(syntaxes_path.join("syntaxes.packdump"))?;
     let reader = BufReader::new(file);
@@ -506,7 +514,11 @@ pub fn generate_site(
     let sitemap_urls: Vec<String> = md_files.iter().map(|p| {
         let rel = p.strip_prefix(base_path).unwrap();
         let url = rel.with_extension("html").to_string_lossy().replace('\\', "/");
-        format!("{}/{}", domain, url)
+        if base_path_str.is_empty() {
+            format!("{}/{}", domain, url)
+        } else {
+            format!("{}/{}/{}", domain, base_path_str.trim_start_matches('/'), url)
+        }
     }).collect();
 
     let sitemap_refs: Vec<&str> = sitemap_urls.iter().map(|s| s.as_str()).collect();
@@ -525,6 +537,7 @@ pub fn generate_site(
                 generate_llm_txt_by_default,
                 omit_languages,
                 disable_syntax_highlighting,
+                base_path_str,
             )
         })
         .collect();
@@ -535,7 +548,7 @@ pub fn generate_site(
     if let Err(e) = sitemap::write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
         eprintln!("Failed to write sitemap: {}", e);
     }
-    if let Err(e) = create_index_page(dist_path, &entries, &mut env, content_index_path) {
+    if let Err(e) = create_index_page(dist_path, &entries, &mut env, content_index_path, base_path_str) {
         eprintln!("Failed to create index page: {}", e);
     } else {
         println!("Index page generated at {}/content-index/index.html", dist_path.display());
@@ -553,12 +566,17 @@ pub fn generate_site(
     for (title, _href, md, llm_description, md_copied) in &results {
 
         if !md_copied { continue; }
-        // Remove any leading "/my-blog" or similar base path from href before joining with domain
+        // Remove any leading base path from href before joining with domain
  
         if let Some(md_path) = md {
+            let url = if base_path_str.is_empty() {
+                format!("{}/{}", domain, md_path)
+            } else {
+                format!("{}/{}/{}", domain, base_path_str.trim_start_matches('/'), md_path)
+            };
             writeln!(llms_tx, "- [{}]({}){}",
                 title,
-                format!("{}/{}", domain, md_path),
+                url,
                 match llm_description {
                     Some(desc) if !desc.trim().is_empty() => format!(": {}", desc.trim()),
                     _ => String::new(),

@@ -8,7 +8,14 @@ use clap::Parser;
 use glob::glob;
 use ssg_generator_utils::{generate_site, load_meta};
 use syntect::parsing::SyntaxSet;
+use serde::Deserialize;
 use tailwindcss_oxide::scanner::{Scanner, sources::PublicSourceEntry};
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct Config {
+    base_path: String,
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version, about = "Static site generator", long_about = None)]
@@ -22,7 +29,7 @@ struct Cli {
     dist: String,
 
     /// Base domain for sitemap URLs (should include protocol and trailing slash)
-    #[arg(long, default_value = "https://shadowrunner8095.github.io/my-blog/")]
+    #[arg(long, default_value = "https://shadowrunner8095.github.io")]
     domain: String,
 
     /// Dump syntaxes and exit
@@ -94,6 +101,15 @@ fn main() {
         return;
     }
 
+    let config: Config = match fs::read_to_string("cats-ssg.json") {
+        Ok(config_str) => {
+            serde_json::from_str(&config_str).expect("Failed to parse cats-ssg.json")
+        }
+        Err(_) => Config {
+            base_path: "".to_string(),
+        },
+    };
+
     let base = Path::new(&cli.base);
     let dist = Path::new(&cli.dist);
     if !dist.exists() {
@@ -135,6 +151,7 @@ fn main() {
         llms_description,
         &omit_languages,
         cli.no_syntax_highlighting,
+        &config.base_path,
     ) {
         eprintln!("Failed to generate site: {}", e);
     }

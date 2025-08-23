@@ -9,3 +9,5 @@ clap = { version = "4.5.43", features = ["derive"] }
 glob = "0.3.2"
 tailwindcss-oxide = { git = "https://github.com/tailwindlabs/tailwindcss.git", subdir = "crates/oxide" }
 syntect = "5.2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

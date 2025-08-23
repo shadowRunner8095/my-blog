@@ -6,7 +6,7 @@
      <h1>Index Content</h1>
     <ul>
       {% for page in pages %}
-        <li><a data-client-navigation="hover" href="/my-blog/{{ page.href }}">{{ page.title }}</a></li>
+        <li><a data-client-navigation="hover" href="{{ base_path }}/{{ page.href }}">{{ page.title }}</a></li>
       {% endfor %}
     </ul>
 
