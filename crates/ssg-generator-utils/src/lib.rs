@@ -218,7 +218,7 @@ fn markdown_to_html(
 ///
 /// ```ignore
 /// // Example (non-compiling stub): call with appropriate SyntaxSet, Theme and Minijinja Environment.
-/// let result = process_md_file(src_path, base_path, dist_path, &ps, &theme, &env, Some(true), &Default::default(), false);
+/// let result = process_md_file(src_path, base_path, dist_path, &ps, &theme, &env, Some(true), &Default::default(), false, "https://example.com", "");
 /// if let Some((title, href, md_rel, llm_desc, copied)) = result {
 ///     println!("Generated {} -> {}, md copied: {}", title, href, copied);
 /// }
@@ -233,6 +233,8 @@ fn process_md_file(
     generate_llm_txt_by_default: Option<bool>,
     omit_languages: &HashSet<String>,
     disable_syntax_highlighting: bool,
+    domain: &str,
+    base_path_str: &str,
 ) -> Option<(String, String, Option<String>, Option<String>, bool)> {
     let md_content = match fs::read_to_string(src_path) {
         Ok(content) => content,
@@ -274,6 +276,8 @@ fn process_md_file(
         tmpl.render(context! {
             title => &title,
             body => &body_html,
+            domain => domain,
+            base_path => base_path_str,
         })
         .unwrap_or_else(|e| {
             eprintln!("Template render error for {}: {}", src_path.display(), e);
@@ -351,16 +355,18 @@ fn process_md_file(
     // Compute href for sitemap/index
     let href = if src_path.file_name().map_or(false, |f| f == "index.md") {
         if let Some(ref slug) = meta.page_slug {
-            format!("/my-blog/{}/index.html", slug)
+            format!("{}/{}/index.html", base_path_str, slug)
         } else {
             format!(
-                "/my-blog/{}",
+                "{}/{}",
+                base_path_str,
                 rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
             )
         }
     } else {
         format!(
-            "/my-blog/{}",
+            "{}/{}",
+            base_path_str,
             rel_path.with_extension("html").to_string_lossy().replace('\\', "/")
         )
     };
@@ -395,7 +401,7 @@ fn process_md_file(
 ///     ("Second Page".to_string(), "second.html".to_string()),
 /// ];
 ///
-/// create_index_page(dist, &entries, &mut env, content_index_template)?;
+/// create_index_page(dist, &entries, &mut env, content_index_template, "/my-blog")?;
 /// # Ok(()) }
 /// ```
 fn create_index_page(
@@ -403,6 +409,7 @@ fn create_index_page(
     entries: &[(String, String)],
     env: &mut Environment,
     content_index_path: &Path,
+    base_path_str: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let index_template_str = fs::read_to_string(content_index_path)?;
 
@@ -411,7 +418,7 @@ fn create_index_page(
     let items: Vec<_> = entries
         .iter()
         .map(|(title, href)| {
-            let href = href.strip_prefix("/my-blog/").unwrap_or(href).to_string();
+            let href = href.strip_prefix(base_path_str).unwrap_or(href).to_string();
             context! { href => href, title => title.clone() }
         })
         .collect();
@@ -467,6 +474,7 @@ fn create_index_page(
 ///     &base,
 ///     &dist,
 ///     "https://example.com",
+///     "",
 ///     &templates,
 ///     &syntaxes,
 ///     &content_index,
@@ -483,6 +491,7 @@ pub fn generate_site(
     base_path: &Path,
     dist_path: &Path,
     domain: &str,
+    base_path_str: &str,
     templates_path: &Path,
     syntaxes_path: &Path,
     content_index_path: &Path,
@@ -501,12 +510,14 @@ pub fn generate_site(
 
     let mut env = Environment::new();
     env.set_loader(minijinja::path_loader(templates_path));
+    env.add_global("domain", domain);
+    env.add_global("base_path", base_path_str);
 
     let domain = domain.trim_end_matches('/');
     let sitemap_urls: Vec<String> = md_files.iter().map(|p| {
         let rel = p.strip_prefix(base_path).unwrap();
         let url = rel.with_extension("html").to_string_lossy().replace('\\', "/");
-        format!("{}/{}", domain, url)
+        format!("{}{}{}", domain, base_path_str, url)
     }).collect();
 
     let sitemap_refs: Vec<&str> = sitemap_urls.iter().map(|s| s.as_str()).collect();
@@ -525,6 +536,8 @@ pub fn generate_site(
                 generate_llm_txt_by_default,
                 omit_languages,
                 disable_syntax_highlighting,
+                domain,
+                base_path_str,
             )
         })
         .collect();
@@ -535,7 +548,7 @@ pub fn generate_site(
     if let Err(e) = sitemap::write_sitemap(&sitemap_refs, sitemap_path.to_string_lossy().as_ref()) {
         eprintln!("Failed to write sitemap: {}", e);
     }
-    if let Err(e) = create_index_page(dist_path, &entries, &mut env, content_index_path) {
+    if let Err(e) = create_index_page(dist_path, &entries, &mut env, content_index_path, base_path_str) {
         eprintln!("Failed to create index page: {}", e);
     } else {
         println!("Index page generated at {}/content-index/index.html", dist_path.display());
@@ -558,7 +571,7 @@ pub fn generate_site(
         if let Some(md_path) = md {
             writeln!(llms_tx, "- [{}]({}){}",
                 title,
-                format!("{}/{}", domain, md_path),
+                format!("{}{}{}", domain, base_path_str, md_path),
                 match llm_description {
                     Some(desc) if !desc.trim().is_empty() => format!(": {}", desc.trim()),
                     _ => String::new(),
