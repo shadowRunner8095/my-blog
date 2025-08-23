@@ -9,24 +9,34 @@ use glob::glob;
 use ssg_generator_utils::{generate_site, load_meta};
 use syntect::parsing::SyntaxSet;
 use tailwindcss_oxide::scanner::{Scanner, sources::PublicSourceEntry};
+use serde::{Deserialize, Serialize};
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Deserialize, Serialize, Default)]
 #[command(author, version, about = "Static site generator", long_about = None)]
-struct Cli {
+struct Config {
     /// Content source directory
-    #[arg(long, default_value = "pages")]
-    base: String,
+    #[arg(long)]
+    base: Option<String>,
 
     /// Output directory
-    #[arg(long, default_value = "dist")]
-    dist: String,
+    #[arg(long)]
+    dist: Option<String>,
 
-    /// Base domain for sitemap URLs (should include protocol and trailing slash)
-    #[arg(long, default_value = "https://shadowrunner8095.github.io/my-blog/")]
-    domain: String,
+    /// Base domain for sitemap URLs (e.g., https://example.com)
+    #[arg(long)]
+    domain: Option<String>,
+
+    /// Base path for sitemap URLs (e.g., /blog)
+    #[arg(long)]
+    base_path: Option<String>,
+
+    /// Path to a JSON configuration file
+    #[arg(long)]
+    config: Option<String>,
 
     /// Dump syntaxes and exit
     #[arg(long)]
+    #[serde(default)]
     dump: bool,
 
     /// Comma-separated list of languages to omit from syntax highlighting
@@ -35,7 +45,23 @@ struct Cli {
 
     /// Disable syntax highlighting altogether
     #[arg(long)]
+    #[serde(default)]
     no_syntax_highlighting: bool,
+}
+
+impl Config {
+    fn merge(self, other: Self) -> Self {
+        Self {
+            base: self.base.or(other.base),
+            dist: self.dist.or(other.dist),
+            domain: self.domain.or(other.domain),
+            base_path: self.base_path.or(other.base_path),
+            config: self.config.or(other.config),
+            dump: self.dump || other.dump,
+            omit_languages: self.omit_languages.or(other.omit_languages),
+            no_syntax_highlighting: self.no_syntax_highlighting || other.no_syntax_highlighting,
+        }
+    }
 }
 
 fn get_md_files(base_path: &Path) -> Vec<PathBuf> {
@@ -87,15 +113,28 @@ fn dump_syntaxes() {
 /// crate::main();
 /// ```
 fn main() {
-    let cli = Cli::parse();
+    let cli_config = Config::parse();
 
-    if cli.dump {
+    let config_path = cli_config.config.as_deref().unwrap_or("cats-ssg.json");
+    let file_config: Config = if Path::new(config_path).exists() {
+        let file = File::open(config_path).expect("Failed to open config file");
+        serde_json::from_reader(file).expect("Failed to parse config file")
+    } else {
+        Config::default()
+    };
+
+    let config = cli_config.merge(file_config);
+
+    if config.dump {
         dump_syntaxes();
         return;
     }
 
-    let base = Path::new(&cli.base);
-    let dist = Path::new(&cli.dist);
+    let base = Path::new(config.base.as_deref().unwrap_or("pages"));
+    let dist = Path::new(config.dist.as_deref().unwrap_or("dist"));
+    let domain = config.domain.as_deref().unwrap_or("https://shadowrunner8095.github.io/my-blog/");
+    let base_path = config.base_path.as_deref().unwrap_or("");
+
     if !dist.exists() {
         fs::create_dir_all(dist).unwrap();
     }
@@ -109,7 +148,7 @@ fn main() {
     let llms_title = main_meta_inf.llm_title.as_deref();
     let llms_description = main_meta_inf.llm_description.as_deref();
 
-    let omit_languages: HashSet<String> = match cli.omit_languages {
+    let omit_languages: HashSet<String> = match config.omit_languages {
         Some(langs) => langs
             .split(',')
             .map(String::from)
@@ -126,7 +165,8 @@ fn main() {
         md_files,
         base,
         dist,
-        &cli.domain,
+        domain,
+        base_path,
         templates_path,
         syntaxes_path,
         content_index_path,
@@ -134,7 +174,7 @@ fn main() {
         llms_title,
         llms_description,
         &omit_languages,
-        cli.no_syntax_highlighting,
+        config.no_syntax_highlighting,
     ) {
         eprintln!("Failed to generate site: {}", e);
     }
