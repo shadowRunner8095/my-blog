@@ -11,7 +11,7 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 ## Roadmap
 - [x] Add google tracking
 - [x] Add support for llms.txt generation
-- [ ] Enhance cli parametrization and create a common api to read a json config or yml
+- [x] Enhance cli parametrization and create a common api to read a json config or yml
 - [ ] Too much clone sin rust code, need optimization
 - [ ] Add plugin system to ssg generator
 - [x] Modularize tracking
@@ -27,6 +27,7 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Design the client side navigation
 - [ ] Add dark/ligth mode
 - [ ] Add dev mode
+- [x] For local development make agnositic the path and domain
 - [ ] Add cache between builds
 - [ ] Add Mermaid
 - [ ] Add support for multilanguage
@@ -66,6 +67,7 @@ This is a personal blog and logbook about my journey, dreams, and ideas in compu
 - [ ] Check other template engines how to glue them
 - [ ] Learn more rust
 - [ ] Create a ligthwitgh codpen alike previsualization for html css and js code
-
+- [ ] Deacople templates from the lib, shoudl be in the cargo app not the lib
+- [ ] Decouple the rendering from the file generation to reuse the rendering engine into a web server
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
