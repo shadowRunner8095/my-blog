@@ -1,11 +1,11 @@
 {% set leftContainer = [
-  {"url": "/my-blog/", "textContent": "Home"},
-  {"url": "/my-blog/content-index/", "textContent": "Index of Contents"}
+    {"url": base_path, "textContent": "Home"},
+    {"url": base_path ~ "content-index/", "textContent": "Index of Contents"}
 ] %}
 
 {% set rightContainer = [
-    {"url": "/my-blog/my-design-process-for-a-navbar/", "textContent": "🚀  Featured"},
-    {"url": "https://medium.com/@shadowrunner8095", "textContent": "Medium"}
+        {"url": base_path ~ "my-design-process-for-a-navbar/", "textContent": "🚀  Featured"},
+        {"url": "https://medium.com/@shadowrunner8095", "textContent": "Medium"}
 ] %}
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +15,7 @@
   <meta property="og:title" content="With the Heart of a Computer Wizard">
   <meta property="og:description" content="A personal logbook and blog about my journey, dreams, and ideas in computing. Follow along as I learn, experiment, and share insights on technology and programming.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="/my-blog/assets/wizard.lulita.webp">
+    <meta property="og:image" content="{{ base_path }}assets/wizard.lulita.webp">
   <meta property="og:image:alt" content="A funny dog with clothes and typing on a computer">
   <meta property="og:url" content="https://shadowrunner11.github.io/my-blog/">
   <meta name="twitter:card" content="summary_large_image">
@@ -34,7 +34,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="/my-blog/main.css">
+    <link rel="stylesheet" href="{{ base_path }}main.css">
     <style>
         h1{
             color: var(--color-title-primary);
@@ -71,7 +71,7 @@
             list-style: decimal;
         }
     </style>
-      <script type="module" src="/my-blog/shared.js" ></script>
+      <script type="module" src="{{ base_path }}shared.js" ></script>
 </head>
 <body class="grid place-content-center">
     {% block bodyInit %}
