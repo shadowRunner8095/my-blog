@@ -1,8 +1,7 @@
 #![warn(unused_extern_crates)]
 use std::{
     collections::HashSet,
-    fs::{self, File},
-    io::{BufReader},
+    fs::{self},
     path::{Path, PathBuf},
 };
 use rayon::prelude::*;
@@ -37,6 +36,7 @@ pub struct Meta {
 ///
 /// ```
 /// use std::path::Path;
+/// use ssg_generator_utils::load_meta;
 /// let meta = load_meta(Path::new("content/page/meta.yml"));
 /// ```
 pub fn load_meta(meta_path: &Path) -> Meta {
@@ -57,6 +57,7 @@ use regex::Regex;
 /// # Examples
 ///
 /// ```
+/// use ssg_generator_utils::remove_tag_and_contents;
 /// let s = "<p>keep</p><secret attr=\"x\">remove\nthis</secret><div>ok</div>";
 /// let out = remove_tag_and_contents(s, "secret");
 /// assert_eq!(out, "<p>keep</p><div>ok</div>");
@@ -75,6 +76,7 @@ pub fn remove_tag_and_contents(md: &str, tag: &str) -> String {
 /// # Examples
 ///
 /// ```
+/// use ssg_generator_utils::remove_tag_only;
 /// let s = "<only-in-llm-txt>Keep this text</only-in-llm-txt>";
 /// let out = remove_tag_only(s, "only-in-llm-txt");
 /// assert_eq!(out, "Keep this text");
@@ -99,11 +101,12 @@ pub fn remove_tag_only(md: &str, tag: &str) -> String {
 ///
 /// ```
 /// use std::path::Path;
-/// assert_eq!(crate::folder_name_to_title(Path::new("my-folder-name")), "My Folder Name");
-/// assert_eq!(crate::folder_name_to_title(Path::new("single")), "Single");
-/// assert_eq!(crate::folder_name_to_title(Path::new("")), "Untitled");
+/// use ssg_generator_utils::folder_name_to_title;
+/// assert_eq!(folder_name_to_title(Path::new("my-folder-name")), "My Folder Name");
+/// assert_eq!(folder_name_to_title(Path::new("single")), "Single");
+/// assert_eq!(folder_name_to_title(Path::new("")), "Untitled");
 /// ```
-fn folder_name_to_title(folder: &Path) -> String {
+pub fn folder_name_to_title(folder: &Path) -> String {
     folder
         .file_name()
         .and_then(|os| os.to_str())
@@ -122,7 +125,7 @@ fn folder_name_to_title(folder: &Path) -> String {
         .unwrap_or_else(|| "Untitled".to_string())
 }
 
-fn markdown_to_html(
+pub fn markdown_to_html(
     md: &str,
     ps: &SyntaxSet,
     theme: &syntect::highlighting::Theme,
@@ -223,7 +226,7 @@ fn markdown_to_html(
 ///     println!("Generated {} -> {}, md copied: {}", title, href, copied);
 /// }
 /// ```
-fn process_md_file(
+pub fn process_md_file(
     src_path: &Path,
     base_path: &Path,
     dist_path: &Path,
@@ -401,10 +404,11 @@ fn process_md_file(
 ///     ("Second Page".to_string(), "second.html".to_string()),
 /// ];
 ///
+/// use ssg_generator_utils::create_index_page;
 /// create_index_page(dist, &entries, &mut env, content_index_template, "/my-blog")?;
 /// # Ok(()) }
 /// ```
-fn create_index_page(
+pub fn create_index_page(
     dist_path: &Path,
     entries: &[(String, String)],
     env: &mut Environment,
@@ -462,21 +466,21 @@ fn create_index_page(
 ///
 /// ```
 /// use std::path::PathBuf;
+/// use ssg_generator_utils::generate_site;
 /// // Call with no markdown files; this will initialize and produce empty outputs in the temp dir.
 /// let md_files: Vec<PathBuf> = Vec::new();
 /// let base = std::env::temp_dir();
 /// let dist = std::env::temp_dir();
 /// let templates = std::env::temp_dir();
-/// let syntaxes = std::env::temp_dir();
-/// let content_index = std::env::temp_dir();
-/// let res = crate::generate_site(
+/// let content_index = std::env::temp_dir().join("content-index.html");
+/// std::fs::write(&content_index, "<html>{{ title }}</html>").unwrap();
+/// let res = generate_site(
 ///     md_files,
 ///     &base,
 ///     &dist,
 ///     "https://example.com",
 ///     "",
 ///     &templates,
-///     &syntaxes,
 ///     &content_index,
 ///     Some(false),
 ///     None,
@@ -493,7 +497,6 @@ pub fn generate_site(
     domain: &str,
     base_path_str: &str,
     templates_path: &Path,
-    syntaxes_path: &Path,
     content_index_path: &Path,
     generate_llm_txt_by_default: Option<bool>,
     llms_title: Option<&str>,
@@ -501,9 +504,9 @@ pub fn generate_site(
     omit_languages: &HashSet<String>,
     disable_syntax_highlighting: bool,
 ) -> Result<(Vec<(String, String, Option<String>, Option<String>)>, Vec<String>), Box<dyn std::error::Error>> {
-    let file = File::open(syntaxes_path.join("syntaxes.packdump"))?;
-    let reader = BufReader::new(file);
-    let ps: SyntaxSet = syntect::dumps::from_reader(reader)?;
+    let ps: SyntaxSet = syntect::dumps::from_binary(include_bytes!(
+        "../syntaxes/syntaxes.packdump"
+    ));
 
     let ts = ThemeSet::load_defaults();
     let theme = &ts.themes["base16-ocean.dark"];

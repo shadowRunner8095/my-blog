@@ -18,6 +18,10 @@ struct Config {
     #[arg(long)]
     base: Option<String>,
 
+    /// Templates directory
+    #[arg(long)]
+    templates: Option<String>,
+
     /// Output directory
     #[arg(long)]
     dist: Option<String>,
@@ -53,6 +57,7 @@ impl Config {
     fn merge(self, other: Self) -> Self {
         Self {
             base: self.base.or(other.base),
+            templates: self.templates.or(other.templates),
             dist: self.dist.or(other.dist),
             domain: self.domain.or(other.domain),
             base_path: self.base_path.or(other.base_path),
@@ -131,6 +136,7 @@ fn main() {
     }
 
     let base = Path::new(config.base.as_deref().unwrap_or("pages"));
+    let templates_path = Path::new(config.templates.as_deref().unwrap_or("templates"));
     let dist = Path::new(config.dist.as_deref().unwrap_or("dist"));
     let domain = config.domain.as_deref().unwrap_or("https://shadowrunner8095.github.io/my-blog/");
     let base_path = config.base_path.as_deref().unwrap_or("");
@@ -140,8 +146,6 @@ fn main() {
     }
     let md_files = get_md_files(base);
 
-    let templates_path = Path::new("crates/ssg-generator-utils/templates");
-    let syntaxes_path = Path::new("crates/ssg-generator-utils/syntaxes");
     let content_index_path = Path::new("crates/ssg-generator-utils/content-index.html");
     let main_meta_inf = load_meta(&base.join("meta.yml"));
 
@@ -168,7 +172,6 @@ fn main() {
         domain,
         base_path,
         templates_path,
-        syntaxes_path,
         content_index_path,
         Some(true),
         llms_title,
