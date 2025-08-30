@@ -18,7 +18,7 @@ Plugins often help with wiring things together, like the ones available for TanS
 
 The key steps are **4 and 5**. Usually, loaders return serializable data. But since we’re on the client, we can also return **promises** if needed.
 
-Let’s look at some examples using **TanStack Router**. You can fin [the code here](https://github.com/shadowRunner8095/experiments)
+Let’s look at some examples using **TanStack Router**. You can find [the code here](https://github.com/shadowRunner8095/experiments)
 
 The project look something like this for reference
 
@@ -111,7 +111,6 @@ export const Route = createLazyFileRoute('/')({
 
 The trick: the **Suspense fallback** is now just a local pending state, not blocking the entire page.
 
----
 
 ### Reusing the Same Promise
 
