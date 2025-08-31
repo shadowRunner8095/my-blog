@@ -118,4 +118,10 @@ You know me: I like to **complicate my life**, just for fun.
 Do I like drama? Maybe too much 😆  
 I like to break things and push them to the limit. Otherwise, I get bored.  
 
+## The links, where are the links?!
+[Hydration is pure overhead](https://www.builder.io/blog/hydration-is-pure-overhead)
+
+[Open components](https://opencomponents.github.io/)
+
+[DSLs](https://martinfowler.com/dsl.html) (hey, buy the book)
 
