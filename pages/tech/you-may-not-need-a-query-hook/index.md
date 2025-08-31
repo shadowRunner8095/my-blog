@@ -1,6 +1,7 @@
 # Fetching Data in Loaders
 
-When I want to fetch data in a SPA with a client router (like TanStack Router + React 19), I usually avoid adding extra libraries. 
+When I want to fetch data in a SPA with a client router (like TanStack Router + React 19), I usually avoid adding extra libraries.
+
 Most router systems already have a **loader**, which is enough in many cases.
 
 ## How Client Routers Work
@@ -64,8 +65,7 @@ export const Route = createLazyFileRoute('/')({
 
 ```
 
-The catch: everything in the page will suspend until the loader resolves, so the **pendingComponent** is shown (say, for ~1500ms).  
-This isn’t always bad, but what if your client wants the **page visible immediately** and only show a loading state for one small section?
+The catch: everything in the page will suspend until the loader resolves, so the **pendingComponent** is shown (say, for ~1500ms). This isn’t always bad, but what if your client wants the **page visible immediately** and only show a loading state for one small section?
 
 ```tsx
 
@@ -99,7 +99,9 @@ export const Route = createLazyFileRoute('/')({
     return (
       <div>
         <p>This does not suspend</p>
-        <Suspense fallback={<div>Here should be a skeleton loader</div>}>
+        <Suspense
+          fallback={<div>Here should be a skeleton loader</div>}
+        >
           <ShowData />
         </Suspense>
       </div>
@@ -127,7 +129,9 @@ const ShowData = () => {
 }
 
 const ShowDataOrLoading = () => (
-  <Suspense fallback={<div>Here should be a skeleton loader</div>}>
+  <Suspense
+    fallback={<div>Here should be a skeleton loader</div>}
+  >
     <ShowData />
   </Suspense>
 )
@@ -173,10 +177,9 @@ For form submissions, you can use **form actions** and `useFormStatus` to handle
 
 ### Conditional Fetching
 
-Sometimes you don’t want to resolve a promise immediately (e.g., waiting for user input).  
-The key is to **preserve the same promise reference** so your component doesn’t get stuck in an infinite suspend/resume loop.  
+Sometimes you don’t want to resolve a promise immediately (e.g., waiting for user input). The key is to **preserve the same promise reference** so your component doesn’t get stuck in an infinite suspend/resume loop.  
 
-One practical example: building an infinite scroll search app — where new data is only fetched once the user types or scrolls.
+One practical example: building an infinite scroll search app where new data is only fetched once the user types or scrolls.
 
 I know we should throttle the requests, but for now let’s skip that to keep things simple.
 
@@ -210,16 +213,13 @@ function Contents({ data }) {
 }
 ```
 
-But now we have a problem: this only gives us a single set of results.  
-If we want **infinite scrolling** or **pagination**, we need something more.  
+But now we have a problem: this only gives us a single set of results. If we want **infinite scrolling** or **pagination**, we need something more.  
 
 I’ll go with infinite scrolling for this example. Be aware that I won’t optimize with **windowing** yet — we’ll just focus on the functionality.  
 
-The key issue is that the component suspends and remounts because the promise reference changes.  
-So instead of a single promise, we need to think in terms of **an array of promises**.  
+The key issue is that the component suspends and remounts because the promise reference changes. So instead of a single promise, we need to think in terms of **an array of promises**.  
 
-We can then use `IntersectionObserver` + `useEffect` to trigger loading more pages when the sentinel enters the viewport.  
-(Later we could refactor this into a `useSyncExternalStore`, but for now let’s keep it simple.)
+We can then use `IntersectionObserver` + `useEffect` to trigger loading more pages when the sentinel enters the viewport. (Later we could refactor this into a `useSyncExternalStore`, but for now let’s keep it simple.)
 
 
 ```tsx
@@ -257,7 +257,9 @@ export function MainSearch({ search }) {
         {searchPromises.map((promise, index) => (
           <Suspense key={`batch-${index}`} fallback={"loading"}>
             <Contents data={promise} />
-            {index + 1 === searchPromises.length && <div ref={sentinelRef}></div>}
+            {index + 1 === searchPromises.length
+              && <div ref={sentinelRef}></div>
+            }
           </Suspense>
         ))}
       </div>
@@ -269,8 +271,8 @@ export function MainSearch({ search }) {
 ```
 
 Nice! Now the UI reacts to **what actually changes**: the array of promises.  
-The sentinel for infinite scroll only renders on the last item, so we avoid keeping extra state like *isFetchingNext* or *isPending*.  
-Suspense does that work for us.  
+
+The sentinel for infinite scroll only renders on the last item, so we avoid keeping extra state like *isFetchingNext* or *isPending*. Suspense does that work for us.  
 
 But backend errors can happen, so let’s add an **ErrorBoundary**.
 
@@ -281,12 +283,31 @@ pnpm add react-error-boundary
 (Just reminding you that react error boundary error does not come inside react package).
 
 ```tsx
-import { useState, useCallback, useRef, useEffect, Suspense, use, memo } from 'react';
-import { CharacterCard, IntersectionSentinel, LoadingSpinner, SearchInput } from './SearchComponents';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  Suspense,
+  use,
+  memo,
+  type ChangeEvent
+} from 'react';
+import {
+  CharacterCard,
+  IntersectionSentinel,
+  LoadingSpinner,
+  SearchInput
+} from './SearchComponents';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 
+interface Result {
+  id: string;
+  text: string;
+}
+
 interface SearchFunction {
-  (value: string, page?: number): Promise<Array<{ id: string; text: string }>>;
+  (value: string, page?: number): Promise<Result[]>;
 }
 
 interface MainSearchProps {
@@ -294,7 +315,7 @@ interface MainSearchProps {
 }
 
 interface ContentsProps {
-  data: Promise<Array<{ id: string; text: string }>>;
+  data: Promise<Result[]>;
 }
 
 function Contents({ data }: ContentsProps) {
@@ -303,7 +324,12 @@ function Contents({ data }: ContentsProps) {
 
   return (
     <div>
-      {result?.map((props) => <CharacterCard key={props.id} {...props} />)}
+      {result?.map((props) =>
+        <CharacterCard
+          key={props.id}
+          {...props} />
+        )
+      }
     </div>
   );
 }
@@ -317,12 +343,16 @@ const CustomError = ({ error }: FallbackProps) => {
 }
 
 export function MainSearch({ search }: MainSearchProps) {
-  const paginationRef = useRef<{ page: 0 }>(null);
+  const paginationRef = useRef<{ page: number }>(null);
   const currentValueRef = useRef<string>('');
 
-  const [searchPromises, setSearchPromises] = useState<Array<Promise<Array<{ id: string; text: string }>>>>([]);
+  const [searchPromises, setSearchPromises] = useState<
+    Array<Promise<Array<Result>>>
+  >([]);
 
-  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallback((
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     const { value } = event.target;
     currentValueRef.current = value;
 
@@ -339,14 +369,23 @@ export function MainSearch({ search }: MainSearchProps) {
       paginationRef.current = { page: 0 };
 
     setSearchPromises(prev =>
-      [...prev, search(currentValueRef.current, ++paginationRef.current.page)]
+      [
+        ...prev,
+        search(
+          currentValueRef.current,
+          ++paginationRef.current.page
+        )
+      ]
     );
   }, [search]);
 
   return (
     <div>
       <SearchInput onChange={onChange} />
-      <ErrorBoundary resetKeys={[currentValueRef.current]} FallbackComponent={CustomError}>
+      <ErrorBoundary
+        resetKeys={[currentValueRef.current]}
+        FallbackComponent={CustomError}
+      >
         <div>
           {searchPromises.map((promise, index) => (
             <Suspense
@@ -355,7 +394,9 @@ export function MainSearch({ search }: MainSearchProps) {
             >
               <MemoContents data={promise} />
               {index + 1 === searchPromises.length && (
-                <IntersectionSentinel onIntersect={onBottom} />
+                <IntersectionSentinel
+                  onIntersect={onBottom}
+                />
               )}
             </Suspense>
           ))}
@@ -368,19 +409,16 @@ export function MainSearch({ search }: MainSearchProps) {
 
 Now the error boundary resets every time the input changes, and shows an error message if something goes wrong.
 
-Something similar could be built with **React Query**, and let me be clear:  
-I *love* React Query. I’m not saying this approach is “better.” React Query’s API is ergonomic, well-crafted, and has a good balance of trade-offs.  
+Something similar could be built with **React Query**, and let me be clear: I *love* React Query. I’m not saying this approach is “better.” React Query’s API is ergonomic, well-crafted, and has a good balance of trade-offs.  
 
-This approach with Suspense just explores another angle — it has its own caveats, trade-offs, and ergonomics.  
+This approach with Suspense just explores another angle, it has its own caveats, trade-offs, and ergonomics.  
 
-The important part: React Query has a powerful **in-memory cache** out of the box.  
-This Suspense approach is closer to cases where caching isn’t needed.  
+The important part: React Query has a powerful **in-memory cache** out of the box. This Suspense approach is closer to cases where caching isn’t needed.  
 
-As I mentioned before, if you manage your promise references carefully, you don’t need a global store to reuse data.  
-But ergonomics matter: React Query makes this easier, while a “manual Suspense” approach may suit **medium-sized apps** or specialized cases.
+As I mentioned before, if you manage your promise references carefully, you don’t need a global store to reuse data. React Query have another aproach, having hooks that explicity return the state of the query and the resolved data, this makes sense in some scenarios aand so the "Suspense” approach may suit **medium-sized apps** or specialized cases.
 
 The same principle could be applied to **vanilla JS** as well. We’re just leaning on React primitives instead of fighting them.  
 
-Of course, abstractions could be built around these ideas — but that’s an exercise for later.  
+Of course, abstractions could be built around these ideas, but that’s an exercise for later.  
 
 Remember that there are **cases where Suspense is *not* the right fit**, for example, when you need to react to errors inside an input, update styles, or set `aria` props dynamically.
