@@ -100,7 +100,11 @@ export const Route = createLazyFileRoute('/')({
       <div>
         <p>This does not suspend</p>
         <Suspense
-          fallback={<div>Here should be a skeleton loader</div>}
+          fallback={
+            <div>
+              Here should be a skeleton loader
+            </div>
+         }
         >
           <ShowData />
         </Suspense>
@@ -130,7 +134,11 @@ const ShowData = () => {
 
 const ShowDataOrLoading = () => (
   <Suspense
-    fallback={<div>Here should be a skeleton loader</div>}
+    fallback={
+      <div>
+        Here should be a skeleton loader
+      </div>
+    }
   >
     <ShowData />
   </Suspense>
@@ -142,7 +150,9 @@ const ShowOnClick = () => {
 
   return (
     <div>
-      <button onClick={onClick}>Show</button>
+      <button onClick={onClick}>
+        Show
+      </button>
       {isVisible && <ShowDataOrLoading />}
     </div>
   )
@@ -162,7 +172,7 @@ export const Route = createLazyFileRoute('/')({
 
 ```
 
-When you click the button, no loading UI shows up — the promise is already resolved, so React skips the suspense fallback.
+When you click the button, no loading UI shows up ,  the promise is already resolved, so React skips the suspense fallback.
 
 
 ### Passing Data Between Pages
@@ -207,7 +217,11 @@ function Contents({ data }) {
 
   return (
     <div>
-      {result.map((props) => <CharacterCard key={props.id} {...props} />)}
+      {result.map((props) => <CharacterCard
+        key={props.id}
+        {...props}
+      />)
+      }
     </div>
   )
 }
@@ -215,7 +229,7 @@ function Contents({ data }) {
 
 But now we have a problem: this only gives us a single set of results. If we want **infinite scrolling** or **pagination**, we need something more.  
 
-I’ll go with infinite scrolling for this example. Be aware that I won’t optimize with **windowing** yet — we’ll just focus on the functionality.  
+I’ll go with infinite scrolling for this example. Be aware that I won’t optimize with **windowing** yet ,  we’ll just focus on the functionality.  
 
 The key issue is that the component suspends and remounts because the promise reference changes. So instead of a single promise, we need to think in terms of **an array of promises**.  
 
@@ -241,7 +255,10 @@ export function MainSearch({ search }) {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setSearchPromises(prev =>
-          [...prev, search(value, ++paginationRef.current.page)]
+          [
+            ...prev,
+            search(value, ++paginationRef.current.page)
+          ]
         )
       }
     })
@@ -299,7 +316,10 @@ import {
   LoadingSpinner,
   SearchInput
 } from './SearchComponents';
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import {
+  ErrorBoundary,
+  type FallbackProps
+} from 'react-error-boundary';
 
 interface Result {
   id: string;
@@ -307,7 +327,10 @@ interface Result {
 }
 
 interface SearchFunction {
-  (value: string, page?: number): Promise<Result[]>;
+  (
+    value: string,
+    page?: number
+  ): Promise<Result[]>;
 }
 
 interface MainSearchProps {
@@ -320,7 +343,6 @@ interface ContentsProps {
 
 function Contents({ data }: ContentsProps) {
   const result = use(data);
-  console.log('rendering', data)
 
   return (
     <div>
@@ -336,13 +358,23 @@ function Contents({ data }: ContentsProps) {
 
 const MemoContents = memo(Contents);
 
-const CustomError = ({ error }: FallbackProps) => {
-  return <div style={{ minHeight: '100vh' }}>
+const CustomError = ({
+  error
+}: FallbackProps) => {
+  return <div
+    style={{
+      minHeight: '100vh'
+    }}
+  >
     {error.message}
   </div>
 }
 
-export function MainSearch({ search }: MainSearchProps) {
+export function MainSearch(
+  {
+    search
+  }: MainSearchProps
+) {
   const paginationRef = useRef<{ page: number }>(null);
   const currentValueRef = useRef<string>('');
 
@@ -381,22 +413,25 @@ export function MainSearch({ search }: MainSearchProps) {
 
   return (
     <div>
-      <SearchInput onChange={onChange} />
+      <SearchInput
+        onChange={onChange}
+      />
       <ErrorBoundary
         resetKeys={[currentValueRef.current]}
         FallbackComponent={CustomError}
       >
         <div>
-          {searchPromises.map((promise, index) => (
-            <Suspense
-              key={`batch-${index}`}
-              fallback={<LoadingSpinner />}
-            >
-              <MemoContents data={promise} />
-              {index + 1 === searchPromises.length && (
-                <IntersectionSentinel
-                  onIntersect={onBottom}
-                />
+          {searchPromises
+            .map((promise, index) => (
+              <Suspense
+                key={`batch-${index}`}
+                fallback={<LoadingSpinner />}
+              >
+                <MemoContents data={promise} />
+                {index + 1 === searchPromises.length && (
+                  <IntersectionSentinel
+                    onIntersect={onBottom}
+                  />
               )}
             </Suspense>
           ))}
@@ -422,3 +457,187 @@ The same principle could be applied to **vanilla JS** as well. We’re just lean
 Of course, abstractions could be built around these ideas, but that’s an exercise for later.  
 
 Remember that there are **cases where Suspense is *not* the right fit**, for example, when you need to react to errors inside an input, update styles, or set `aria` props dynamically.
+
+## Nevertheless, React 19 still has ways to do this without extra libraries
+
+Let’s explore a case: An input could be valid in format but invalid when checked against an async operation, which returns errors.
+
+We need to wait for the async operation to resolve before deciding if something is valid. Then we render, next to the input, an “ok” or “wrong” icon and show the error text below the input. Additionally, a wrapper around the input and the icon should change style when something is invalid, like turning its border red.
+
+If we keep saving a promise in state, we hit a problem: only the icon and error box can suspend with a loading fallback. But the wrapper also needs the awaited result to decide what border color to show. Since the input is its child, if the wrapper suspends, the input will lose its state, or worse, disappear and show the nearest Suspense fallback in the tree. That’s visually nasty, and we lose whatever the user was typing, because the component remounts after suspending.
+
+So... is there any way to not fight the framework?  
+Well yes: `useDeferredValue` integrates with Suspense so React doesn’t replace the UI of parts using the deferred value, even when that value should trigger a Suspense state visually.
+
+Let’s create the input. **But we must separate things logically.** The components that need the resolved data from the promise are:  
+- `InputLayout`  
+- `IconWrapper`  
+- `ErrorText`
+
+Only the last two need to suspend with fallbacks. Let’s start by creating the layout:
+
+```tsx
+interface InputValidationResponse {
+  error?: Error;
+  data?: any;
+}
+
+interface InputLayoutProps {
+  deferedValue: Promise<InputValidationResponse>;
+  isStale: boolean;
+}
+
+export function IncorrectInputLayout({
+  deferedValue,
+ ...props
+}: PropsWithChildren<InputLayoutProps>){
+  const data = use(deferedValue)
+
+  return <div
+    style={{
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      borderColor: data.error ? 'red' : 'black',
+      display: 'flex'
+    }}
+    {...props}
+  />
+}
+```
+```tsx
+interface InputValidationResponse {
+  error?: Error;
+  data?: any;
+}
+
+interface InputLayoutProps {
+  deferedValue: Promise<InputValidationResponse>;
+  isStale: boolean;
+}
+
+export function IncorrectInputLayout({deferedValue, ...props}: PropsWithChildren<InputLayoutProps>){
+  const data = use(deferedValue)
+
+  return <div
+    style={{
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      borderColor: data.error ? 'red' : 'black',
+      display: 'flex'
+    }}
+    {...props}
+  />
+}
+
+```
+
+As we can see, this is agnostic, it can be reused without knowing if it’s tied to Suspense or `useDeferredValue`. Now let’s continue with the other two components:
+
+```tsx
+// Very bad icon example, lol
+function IconWrapper(
+  {
+    query
+  }: {
+    query: Promise<InputValidationResponse>
+  }
+) {
+  const { error } = use(query)
+  return error ? "Bad" : "Ok"
+}
+
+// Again, a bad error example, but just for demo
+function ErrorText(
+  {
+    query
+  }: {
+    query: Promise<InputValidationResponse>
+  }) {
+  const { error } = use(query)
+  if (error) return error.message
+}
+
+```
+Let’s try creating code that will fail:
+
+```tsx
+interface SearchInputWithAsyncValidation {
+  validate(value: string): Promise<InputValidationResponse>;
+  InputLayoutComponent?: FC<PropsWithChildren<InputLayoutProps>>;
+}
+
+const defaultValue = Promise.resolve({})
+
+export function SearchInputWithPromiseValidation(
+  {
+    validate,
+    InputLayoutComponent = IncorrectInputLayout
+  }: SearchInputWithAsyncValidation
+) {
+  const [query, setQuery] = useState<
+    Promise<InputValidationResponse>
+  >(defaultValue)
+
+  const onChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    setQuery(validate(event.target.value))
+  }
+
+  return <Suspense fallback={'Outer Loading'}>
+    <div>
+      <InputLayoutComponent
+        deferedValue={query}
+      >
+        <input
+          style={{ border: 'none', outline: 'none' }}
+          onChange={onChange}
+        />
+        <Suspense fallback={<div>Loading</div>}>
+          <IconWrapper query={query} />
+        </Suspense>
+      </InputLayoutComponent>
+      <Suspense>
+        <ErrorText query={query} />
+      </Suspense>
+    </div>
+  </Suspense>
+}
+
+```
+
+In this case, the input disappears and is replaced by the outer Suspense, remounting everything. This is a common pitfall. But no fear, here comes the deferred value.
+
+The final glue code looks like this:
+```tsx
+function InputLayout({
+  deferedValue,
+  ...props
+}: PropsWithChildren<InputLayoutProps>) {
+  const promise = useDeferredValue(deferedValue)
+  const data = use(promise)
+
+  return <div
+    style={{
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      borderColor: data.error ? 'red' : 'black',
+      display: 'flex'
+    }}
+    {...props}
+  />
+}
+
+```
+Now, using this `InputLayout` instead of the incorrect one, the outer Suspense no longer takes over.
+
+I know inline `style` props aren’t ideal, but remember, this is just an example. The focus is the behavior, not styling.
+
+Now the input doesn’t disappear, because as we said, using the deferred value avoids re-rendering the subscribed parts.
+
+Error boundaries are missing, but honestly I prefer to include errors in the final data instead of throwing. That way, when a *real* error happens, it’s not some “expected” error like a 404, but an actual app error we can catch with a Boundary. A 404 isn’t an “error” from my perspective.
+
+Of course, there are many other ways to implement this pattern, like having promises injected from context that manages references or caches, allowing us to build powerful reactive systems. Another option is `useSyncExternalStore`, which can return different promises if needed. (This means you could use Zustand to return promises instead of just storing data, though that requires a different mental model than global stores. And since it’s more for sync operations, chances are low you’d use it here, but who knows.)
+
+Now, we can lift the defered value also if we do not want to include it fro the input layout if it is not its responsability for
+the design, so as you can see we have several ways to use fluent React 19.
