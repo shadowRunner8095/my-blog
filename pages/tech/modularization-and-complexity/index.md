@@ -1,12 +1,12 @@
 # Hiding the Dust Under the Carpet
 
 ## Index
-[Have You Seen This Code?](#have-you-seen-this-code)
+- [Have You Seen This Code?](#have-you-seen-this-code)
   - The hidden cognitive cost of apparently modularized code that appears readable but suffers from poor modularization
   - The pain of navigating multiple files and the Shotgun Surgery code smell
   - This pain is not accidental, it stems from poor decomposition and cognitive overload
 
-[Cognitive Foundations](#cognitive-foundations)
+- [Cognitive Foundations](#cognitive-foundations)
   - [Working Memory Limits](#working-memory-limits)
     - Miller's Law (7±2) and modern updates
     - Chunking as cognitive compression
