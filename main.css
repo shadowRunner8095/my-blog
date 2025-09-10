@@ -15,7 +15,11 @@
     }
     ul, ol{
         margin: auto;
-        padding: auto;
+        padding-inline: 40px;
         list-style: auto;
+    }
+
+    ul{
+        list-style: disc;
     }
 }
