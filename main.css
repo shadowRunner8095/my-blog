@@ -13,4 +13,9 @@
     a{
         color: violet;
     }
+    ul, ol{
+        margin: auto;
+        padding: auto;
+        list-style: auto;
+    }
 }
