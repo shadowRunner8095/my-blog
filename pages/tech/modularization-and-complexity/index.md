@@ -7,22 +7,22 @@
   - This pain is not accidental, it stems from poor decomposition and cognitive overload
 
 [Cognitive Foundations](#cognitive-foundations)
-  [Working Memory Limits](#working-memory-limits)
+  - [Working Memory Limits](#working-memory-limits)
     - Miller's Law (7±2) and modern updates
     - Chunking as cognitive compression
     - Why large undivided problems exceed mental capacity
-  [Comprehension and Abstraction](#comprehension-and-abstraction)
+  - [Comprehension and Abstraction](#comprehension-and-abstraction)
     - Abstraction reduces cognitive load
     - Hierarchical thinking is natural to humans
     - Decomposition helps create stable mental models
 
-[Consequences of Poor Decomposition](#consequences-of-poor-decomposition)
-  [In Software](#in-software)
+- [Consequences of Poor Decomposition](#consequences-of-poor-decomposition)
+  - [In Software](#in-software)
     - Harder debugging (ripple effects everywhere)
     - Low reusability and duplication of effort
     - Fragile systems that break with small changes
     - Team-level slowdown (coordination overhead)
-  [In Other Systems Case Studies](#in-other-systems-case-studies)
+  - [In Other Systems Case Studies](#in-other-systems-case-studies)
     - Engineering disasters (complexity mismanaged)
     - Organizational failures (departments too interdependent)
     - Historical cases where lack of modularization led to collapse
