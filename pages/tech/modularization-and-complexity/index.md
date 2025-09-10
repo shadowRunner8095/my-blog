@@ -184,7 +184,7 @@ When code exposes higher-level operations ("process order", "validate policy") i
 
 When modules are not properly decomposed, the following predictable problems occur:
 
-• **Increased debugging costs and ripple effects.** Changes in one area force coordinated edits in many other areas, increasing the likelihood of regression. Empirical tools that measure co-change patterns demonstrate that poor architectural boundaries cause substantially more co-editing activity—a measurable indicator of hidden coupling.
+• **Increased debugging costs and ripple effects.** Changes in one area force coordinated edits in many other areas, increasing the likelihood of regression. Empirical tools that measure co-change patterns demonstrate that poor architectural boundaries cause substantially more co-editing activity, a measurable indicator of hidden coupling.
 
 • **Duplication and low reusability.** When responsibility boundaries are unclear, code that should be reusable gets copied with minor variations, creating "data clumps" and repeated logic that multiplies maintenance work.
 <!-- Recent automated refactoring research documents the prevalence and cost of these data-clump patterns and shows measurable gains when they are corrected. -->
